@@ -1,0 +1,17 @@
+import 'package:flutter/material.dart';
+
+class BookScreen extends StatelessWidget {
+  const BookScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Books'),
+      ),
+      body: const Center(
+        child: Text('Book Collection'),
+      ),
+    );
+  }
+}

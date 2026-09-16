@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/screens/home/bottom_cart_screen.dart';
 import 'package:new_expense/screens/home/bottom_category_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
-// import '../constants/app_colors.dart';
+import 'package:new_expense/screens/order_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -32,21 +33,21 @@ class AppDrawer extends StatelessWidget {
           
                     const SizedBox(width: 14),
           
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hi, User',
-                          style: TextStyle(
+                          'Hi, ${UserData.name.split(' ')[0]}',
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: AppColors.dark,
                           ),
                         ),
 
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
 
-                        Text(
+                        const Text(
                           'View Profile',
                           style: TextStyle(
                             fontSize: 13,
@@ -62,13 +63,6 @@ class AppDrawer extends StatelessWidget {
               const Divider(),
           
               // Menu items
-              ListTile(
-                leading: const Icon(Icons.home_outlined),
-                title: const Text('Home'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
 
               ListTile(
                 leading: const Icon(Icons.category_outlined),
@@ -104,6 +98,7 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('My Orders'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderScreen()));
                 },
               ),
           
@@ -124,26 +119,21 @@ class AppDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
               ),
-          
+
               ListTile(
-                leading: const Icon(Icons.notifications_none),
-                title: const Text('Notifications'),
+                leading: const Icon(Icons.card_giftcard),
+                title: const Text('Coupons'),
                 onTap: () {
                   Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No coupons available at the moment.')),
+                  );
                 },
               ),
           
               ListTile(
                 leading: const Icon(Icons.help_outline),
                 title: const Text('Help & Support'),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-          
-              ListTile(
-                leading: const Icon(Icons.settings_outlined),
-                title: const Text('Settings'),
                 onTap: () {
                   Navigator.pop(context);
                 },

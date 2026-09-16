@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/widgets/address_dialog.dart';
+import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/data/mock_products.dart';
 import 'package:new_expense/screens/home/HomeWidgets/featured_products.dart';
@@ -96,7 +98,35 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // const SizedBox(height: 16),
+                // Location section
+                ValueListenableBuilder<String>(
+                  valueListenable: UserData.locationNotifier,
+                  builder: (context, loc, _) {
+                    return InkWell(
+                      onTap: () {
+                        showAddressDialog(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.location_on, size: 16, color: AppColors.primary),
+                            const SizedBox(width: 4),
+                            const Text('Deliver to: ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                            Expanded(
+                              child: Text(
+                                loc, 
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.dark),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const Icon(Icons.edit, size: 14, color: AppColors.grey),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                ),
                 // search bar section
                 const HomeSearchBar(),
                 // categories header section

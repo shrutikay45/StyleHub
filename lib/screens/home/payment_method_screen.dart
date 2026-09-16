@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/data/user_data.dart';
+import 'package:new_expense/data/cart_data.dart';
+import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/models/order_model.dart';
+import 'package:new_expense/screens/home/main_bottom_nav.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
@@ -87,16 +92,29 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
   }
 
+  void _createOrderAndClearCart() {
+    if (CartData.items.isEmpty) return;
+    
+    final order = OrderModel(
+      orderId: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+      status: 'Processing',
+      orderDate: DateTime.now(),
+      items: List.from(CartData.items),
+      totalAmount: widget.totalAmount,
+      customerName: UserData.name,
+      deliveryAddress: UserData.location,
+      paymentMethod: selectedPaymentMethod ?? 'Unknown',
+      expectedDelivery: 'In 3-5 days',
+    );
+    OrderData.addOrder(order);
+    CartData.items.clear();
+  }
+
   // ------------------------------------------------------------
   // OPEN RAZORPAY
   // ------------------------------------------------------------
 
   void _openRazorpay() {
-    if (razorpayTestKey == 'YOUR_RAZORPAY_TEST_KEY') {
-      _showRazorpaySetupMessage();
-      return;
-    }
-
     final options = {
       'key': razorpayTestKey,
       'amount': (widget.totalAmount * 100).round(),
@@ -133,6 +151,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   void _handlePaymentSuccess(
       PaymentSuccessResponse response,
       ) {
+    _createOrderAndClearCart();
     _showOrderSuccess(
       title: 'Payment Successful',
       message: 'Your order has been placed successfully.',
@@ -218,6 +237,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               onPressed: () {
                 Navigator.pop(context);
 
+                _createOrderAndClearCart();
                 _showOrderSuccess(
                   title: 'Order Placed',
                   message:
@@ -240,54 +260,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  // ------------------------------------------------------------
-  // RAZORPAY SETUP MESSAGE
-  // ------------------------------------------------------------
 
-  void _showRazorpaySetupMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          title: const Text(
-            'Razorpay setup',
-            style: TextStyle(
-              color: AppColors.dark,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          content: const Text(
-            'The payment screen is ready. '
-                'Add your Razorpay test key to start testing online payments.',
-            style: TextStyle(
-              color: AppColors.grey,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text('Okay'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   // ------------------------------------------------------------
   // ORDER SUCCESS
@@ -683,9 +656,10 @@ class OrderSuccessScreen extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.popUntil(
+                      Navigator.pushAndRemoveUntil(
                         context,
-                            (route) => route.isFirst,
+                        MaterialPageRoute(builder: (context) => const MainBottomNavigation()),
+                        (route) => false,
                       );
                     },
                     style: ElevatedButton.styleFrom(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/screens/auth/create_account_screen.dart';
 import 'package:new_expense/screens/auth/forgot_pass_screen.dart';
 import 'package:new_expense/screens/auth/phone_login_screen.dart';
@@ -15,6 +16,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isPasswordVisible = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
 
               TextField(
+                controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   filled: true,
@@ -98,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
 
               TextField(
+                controller: _passwordController,
                 obscureText: !isPasswordVisible,
                 decoration: InputDecoration(
                   hintText: 'Password',
@@ -166,7 +178,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 48,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Login API later
+                    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter Email and Password!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      return;
+                    }
+                    
+                    // Save credentials locally
+                    UserData.email = _emailController.text.isNotEmpty ? _emailController.text : UserData.email;
+                    UserData.password = _passwordController.text;
+                    
                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainBottomNavigation(),));
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/widgets/address_dialog.dart';
+import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/screens/order_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
-// import 'package:new_expense/constants/app_colors.dart';
-// import 'package:new_expense/screens/wishlist_screen.dart';
 
 class BottomAccountScreen extends StatelessWidget {
   const BottomAccountScreen({super.key});
@@ -11,240 +11,287 @@ class BottomAccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
+      backgroundColor: AppColors.softBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
             // -----------------------------------------------------------
-            // TOP APP BAR
+            // HEADER PROFILE SECTION (Flipkart Style)
             // -----------------------------------------------------------
             Container(
-              height: 40,
-              // padding: const EdgeInsets.symmetric(horizontal: 16),
-              color: AppColors.background,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                      color: AppColors.dark,
+                  Container(
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: AppColors.primary,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Profile',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.dark,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          UserData.name,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          UserData.email,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          UserData.phone,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
 
+            const SizedBox(height: 16),
+
             // -----------------------------------------------------------
-            // CONTENT
+            // SHOPPING & ORDERS CARD
             // -----------------------------------------------------------
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
+            _buildMenuGroup(
+              context,
+              title: 'Shopping',
+              children: [
+                _ProfileMenuListItem(
+                  icon: Icons.inventory_2_outlined,
+                  title: 'My Orders',
+                  subtitle: 'Track, return, or buy things again',
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderScreen(),));
+                  },
+                ),
+                const Divider(height: 1, indent: 60),
+                _ProfileMenuListItem(
+                  icon: Icons.favorite_border,
+                  title: 'My Wishlist',
+                  subtitle: 'Your most loved styles',
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const WishlistScreen(),));
+                  },
+                ),
+              ],
+            ),
+
+            // -----------------------------------------------------------
+            // ACCOUNT SETTINGS CARD
+            // -----------------------------------------------------------
+            ValueListenableBuilder<String>(
+              valueListenable: UserData.locationNotifier,
+              builder: (context, loc, _) {
+                return _buildMenuGroup(
+                  context,
+                  title: 'Account Settings',
                   children: [
-                    // ---------------------------------------------------
-                    // DARK PROFILE BANNER
-                    // ---------------------------------------------------
-                    Container(
-                      height: 130,
-                      width: double.infinity,
-                      color: AppColors.dark.withOpacity(0.85),
-                    ),
-
-                    // ---------------------------------------------------
-                    // PROFILE IMAGE + LOGIN BUTTON
-                    // ---------------------------------------------------
-                    SizedBox(
-                      height: 115,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          // Profile placeholder
-                          Positioned(
-                            left: 20,
-                            top: -60,
-                            child: Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: AppColors.dark.withOpacity(0.10),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.dark.withOpacity(0.06),
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                Icons.person_outline,
-                                size: 115,
-                                color: AppColors.dark.withOpacity(0.75),
-                              ),
-                            ),
-                          ),
-
-                          // Login / Sign Up button
-                          Positioned(
-                            left: 160,
-                            right: 20,
-                            top: 22,
-                            child: SizedBox(
-                              height: 47,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // Login / Sign Up screen
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  foregroundColor: AppColors.background,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'LOG IN/SIGN UP',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // ---------------------------------------------------
-                    // SECTION DIVIDER
-                    // ---------------------------------------------------
-                    Container(
-                      height: 20,
-                      color: AppColors.dark.withOpacity(0.05),
-                    ),
-
-                    // ---------------------------------------------------
-                    // ORDERS
-                    // ---------------------------------------------------
-                    _ProfileMenuItem(
-                      icon: Icons.inventory_2_outlined,
-                      title: 'Orders',
-                      subtitle: 'Check your order status',
+                    _ProfileMenuListItem(
+                      icon: Icons.person_outline,
+                      title: 'Edit Profile',
+                      subtitle: 'Change your name, phone, etc.',
                       onTap: () {
-                        // Orders screen
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(),));
+                        showAddressDialog(context);
                       },
                     ),
-
-                    // ---------------------------------------------------
-                    // HELP CENTER
-                    // ---------------------------------------------------
-                    _ProfileMenuItem(
-                      icon: Icons.support_agent_outlined,
-                      title: 'Help Center',
-                      subtitle: 'Help regarding your recent purchases',
+                    const Divider(height: 1, indent: 60),
+                    _ProfileMenuListItem(
+                      icon: Icons.location_on_outlined,
+                      title: 'Saved Addresses',
+                      subtitle: loc,
                       onTap: () {
-                        // Help Center screen
+                        // Show dialog to change location
+                        showAddressDialog(context);
                       },
                     ),
-
-                    // ---------------------------------------------------
-                    // WISHLIST
-                    // ---------------------------------------------------
-                    _ProfileMenuItem(
-                      icon: Icons.favorite_border,
-                      title: 'Wishlist',
-                      subtitle: 'Your most loved styles',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const WishlistScreen(),
-                          ),
-                        );
-                      },
-                    ),
-
-                    // ---------------------------------------------------
-                    // SECTION DIVIDER
-                    // ---------------------------------------------------
-                    Container(
-                      height: 20,
-                      color: AppColors.dark.withOpacity(0.05),
-                    ),
-
-                    // ---------------------------------------------------
-                    // INFORMATION LINKS
-                    // ---------------------------------------------------
-                    _ProfileSimpleItem(
-                      title: 'FAQs',
-                      onTap: () {},
-                    ),
-
-                    _ProfileSimpleItem(
-                      title: 'ABOUT US',
-                      onTap: () {},
-                    ),
-
-                    _ProfileSimpleItem(
-                      title: 'TERMS OF USE',
-                      onTap: () {},
-                    ),
-
-                    _ProfileSimpleItem(
-                      title: 'PRIVACY POLICY',
-                      onTap: () {},
-                    ),
-
-                    _ProfileSimpleItem(
-                      title: 'GRIEVANCE REDRESSAL',
-                      onTap: () {},
-                    ),
-
-
-                    const SizedBox(height: 30),
                   ],
+                );
+              }
+            ),
+
+            // -----------------------------------------------------------
+            // SUPPORT CARD
+            // -----------------------------------------------------------
+            _buildMenuGroup(
+              context,
+              title: 'Feedback & Information',
+              children: [
+                _ProfileMenuListItem(
+                  icon: Icons.support_agent_outlined,
+                  title: 'Help Center',
+                  subtitle: 'Help regarding your recent purchases',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Help Center is currently unavailable.')),
+                    );
+                  },
+                ),
+                const Divider(height: 1, indent: 60),
+                _ProfileMenuListItem(
+                  icon: Icons.article_outlined,
+                  title: 'Policies',
+                  subtitle: 'Terms of Use, Privacy Policy',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Policies documentation will be available soon.')),
+                    );
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // -----------------------------------------------------------
+            // LOGOUT BUTTON
+            // -----------------------------------------------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Logout action (dummy for now)
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.primary,
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: AppColors.primary, width: 1),
+                    ),
+                  ),
+                  child: const Text(
+                    'Log Out',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),
+            
+            const SizedBox(height: 30),
           ],
         ),
+      ),
+    );
+  }
+
+  // Helper method to build grouped cards
+  Widget _buildMenuGroup(BuildContext context, {required String title, required List<Widget> children}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.dark,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: children,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
 // =======================================================================
-// PROFILE MENU ITEM
+// PROFILE LIST ITEM
 // =======================================================================
-
-class _ProfileMenuItem extends StatelessWidget {
+class _ProfileMenuListItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
-  const _ProfileMenuItem({
+  const _ProfileMenuListItem({
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -253,112 +300,55 @@ class _ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.background,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          height: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: AppColors.dark.withOpacity(0.10),
-                width: 1,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: AppColors.primary,
               ),
             ),
-          ),
-          child: Row(
-            children: [
-              // Icon
-              SizedBox(
-                width: 30,
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: AppColors.dark.withOpacity(0.45),
-                ),
-              ),
-
-              const SizedBox(width: 20),
-
-              // Text
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.dark,
-                      ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.dark,
                     ),
-
-                    const SizedBox(height: 5),
-
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.dark.withOpacity(0.50),
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              Icon(
-                Icons.chevron_right,
-                size: 27,
-                color: AppColors.dark.withOpacity(0.55),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// =======================================================================
-// SIMPLE INFORMATION ITEM
-// =======================================================================
-
-class _ProfileSimpleItem extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-
-  const _ProfileSimpleItem({
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.background,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          height: 60,
-          padding: const EdgeInsets.only(
-            left: 80,
-            right: 30,
-          ),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: AppColors.dark.withOpacity(0.65),
             ),
-          ),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.grey,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );

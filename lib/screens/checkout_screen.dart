@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/models/order_model.dart';
 import 'package:new_expense/screens/home/payment_method_screen.dart';
 
 import '../../data/cart_data.dart';
@@ -17,6 +19,7 @@ class CheckoutScreen extends StatefulWidget {
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
+
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
@@ -62,6 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   double get total {
     return subtotal + deliveryCharge;
   }
+
 
   // ---------------------------------------------------------------------------
   // BUILD
@@ -958,8 +962,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       MaterialPageRoute(
         builder: (context) => PaymentMethodScreen(
           totalAmount: total,
+          items: checkoutItems,
         ),
       ),
     );
   }
+
 }
+
+
+
+

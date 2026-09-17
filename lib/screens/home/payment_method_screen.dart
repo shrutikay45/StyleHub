@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/models/cart_item.dart';
+import 'package:new_expense/models/order_model.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   final double totalAmount;
+  final List<CartItem> items;
+  // final String customerName;
+  // final String deliveryAddress;
 
   const PaymentMethodScreen({
     super.key,
     required this.totalAmount,
+    required this.items,
   });
 
   @override
@@ -217,7 +224,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-
+                _createOrder('Cash on Delivery');
                 _showOrderSuccess(
                   title: 'Order Placed',
                   message:
@@ -272,6 +279,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                _createOrder('UPI');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
@@ -307,6 +315,23 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       ),
     );
   }
+
+  void _createOrder(String paymentMethod) {
+    final order = OrderModel(
+      orderId: 'ORD${DateTime.now().millisecondsSinceEpoch}',
+      orderDate: DateTime.now(),
+      items: List<CartItem>.from(widget.items),
+      totalAmount: widget.totalAmount,
+      customerName: 'Customer',
+      deliveryAddress: 'Delivery address',
+      paymentMethod: paymentMethod,
+      status: 'Order Confirmed',
+      expectedDelivery: 'Expected delivery within 3-5 days',
+    );
+
+    OrderData.addOrder(order);
+  }
+
 
   // ------------------------------------------------------------
   // SCREEN

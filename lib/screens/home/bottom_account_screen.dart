@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/screens/help_center_screen.dart';
 import 'package:new_expense/screens/order_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
 // import 'package:new_expense/constants/app_colors.dart';
@@ -165,6 +166,7 @@ class BottomAccountScreen extends StatelessWidget {
                       subtitle: 'Help regarding your recent purchases',
                       onTap: () {
                         // Help Center screen
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterScreen(),));
                       },
                     ),
 

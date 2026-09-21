@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/data/user_data.dart';
+import 'package:new_expense/data/cart_data.dart';
+import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/models/order_model.dart';
+import 'package:new_expense/screens/home/main_bottom_nav.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/data/order_data.dart';
 import 'package:new_expense/models/cart_item.dart';
@@ -94,16 +99,29 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
   }
 
+  void _createOrderAndClearCart() {
+    if (CartData.items.isEmpty) return;
+    
+    final order = OrderModel(
+      orderId: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+      status: 'Processing',
+      orderDate: DateTime.now(),
+      items: List.from(CartData.items),
+      totalAmount: widget.totalAmount,
+      customerName: UserData.name,
+      deliveryAddress: UserData.location,
+      paymentMethod: selectedPaymentMethod ?? 'Unknown',
+      expectedDelivery: 'In 3-5 days',
+    );
+    OrderData.addOrder(order);
+    CartData.items.clear();
+  }
+
   // ------------------------------------------------------------
   // OPEN RAZORPAY
   // ------------------------------------------------------------
 
   void _openRazorpay() {
-    if (razorpayTestKey == 'YOUR_RAZORPAY_TEST_KEY') {
-      _showRazorpaySetupMessage();
-      return;
-    }
-
     final options = {
       'key': razorpayTestKey,
       'amount': (widget.totalAmount * 100).round(),
@@ -140,6 +158,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   void _handlePaymentSuccess(
       PaymentSuccessResponse response,
       ) {
+    _createOrderAndClearCart();
     _showOrderSuccess(
       title: 'Payment Successful',
       message: 'Your order has been placed successfully.',
@@ -224,7 +243,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+<<<<<<< HEAD
                 _createOrder('Cash on Delivery');
+=======
+
+                _createOrderAndClearCart();
+>>>>>>> 7f6ab62552984b0bfc97f38a4f716cedfe78a707
                 _showOrderSuccess(
                   title: 'Order Placed',
                   message:
@@ -247,10 +271,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  // ------------------------------------------------------------
-  // RAZORPAY SETUP MESSAGE
-  // ------------------------------------------------------------
 
+<<<<<<< HEAD
   void _showRazorpaySetupMessage() {
     showDialog(
       context: context,
@@ -296,6 +318,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       },
     );
   }
+=======
+>>>>>>> 7f6ab62552984b0bfc97f38a4f716cedfe78a707
 
   // ------------------------------------------------------------
   // ORDER SUCCESS
@@ -708,9 +732,10 @@ class OrderSuccessScreen extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.popUntil(
+                      Navigator.pushAndRemoveUntil(
                         context,
-                            (route) => route.isFirst,
+                        MaterialPageRoute(builder: (context) => const MainBottomNavigation()),
+                        (route) => false,
                       );
                     },
                     style: ElevatedButton.styleFrom(

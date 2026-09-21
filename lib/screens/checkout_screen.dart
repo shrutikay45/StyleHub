@@ -6,6 +6,7 @@ import 'package:new_expense/screens/home/payment_method_screen.dart';
 
 import '../../data/cart_data.dart';
 import '../../models/cart_item.dart';
+import '../../data/user_data.dart';
 
 class CheckoutScreen extends StatefulWidget {
   // If this is provided, checkout is coming from Buy Now.
@@ -27,10 +28,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // ADDRESS
   // ---------------------------------------------------------------------------
 
-  String customerName = 'Shrutika Yadav';
+  String customerName = UserData.name;
 
-  String deliveryAddress =
-      'Indore, Madhya Pradesh, India';
+  String deliveryAddress = UserData.location;
 
   // ---------------------------------------------------------------------------
   // CHECKOUT ITEMS
@@ -909,6 +909,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                       deliveryAddress =
                           addressController.text.trim();
+                          
+                      UserData.name = customerName;
+                      UserData.location = deliveryAddress;
                     });
 
                     Navigator.pop(context);

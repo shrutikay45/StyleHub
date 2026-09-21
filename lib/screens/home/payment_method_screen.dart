@@ -243,12 +243,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-<<<<<<< HEAD
+
                 _createOrder('Cash on Delivery');
-=======
 
                 _createOrderAndClearCart();
->>>>>>> 7f6ab62552984b0bfc97f38a4f716cedfe78a707
+
                 _showOrderSuccess(
                   title: 'Order Placed',
                   message:
@@ -272,7 +271,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
 
-<<<<<<< HEAD
+
   void _showRazorpaySetupMessage() {
     showDialog(
       context: context,
@@ -318,8 +317,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       },
     );
   }
-=======
->>>>>>> 7f6ab62552984b0bfc97f38a4f716cedfe78a707
+
 
   // ------------------------------------------------------------
   // ORDER SUCCESS

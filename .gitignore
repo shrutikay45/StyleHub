@@ -8,3 +8,7 @@ target/
 .env
 firebase-service-account.json
 HELP.md
+
+# Decoupled Standalone Repositories & Docs
+admin-portal/
+AUTH_SYSTEM_DOCUMENTATION.md

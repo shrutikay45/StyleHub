@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/data/mock_products.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/fashsaleviewscreen/sale_products_viewall_screen.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 
@@ -29,6 +29,7 @@ class FlashSale extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final flashProducts = ProductService().getFlashSaleProducts();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
@@ -159,13 +160,13 @@ class FlashSale extends StatelessWidget {
             height: 205,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: mockProducts.take(6).length,
+              itemCount: flashProducts.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(width: 12);
               },
               itemBuilder: (context, index) {
 
-                final product = mockProducts[index];
+                final product = flashProducts[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -194,10 +195,23 @@ class FlashSale extends StatelessWidget {
                                 width: 125,
                                 height: 135,
                                 color: Colors.white,
-                                child: Image.asset(
-                                  product.image,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: product.image.startsWith('http')
+                                    ? Image.network(
+                                        product.image,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          color: const Color(0xFFFCE4EC),
+                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        product.image,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          color: const Color(0xFFFCE4EC),
+                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                        ),
+                                      ),
                               ),
                             ),
 

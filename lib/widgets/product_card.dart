@@ -32,12 +32,27 @@ class ProductCard extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
 
-                  child: Image.asset(
-                    product.image,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: product.image.startsWith('http')
+                      ? Image.network(
+                          product.image,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: const Color(0xFFFFF0F5),
+                            child: const Icon(Icons.image_outlined, color: Colors.grey),
+                          ),
+                        )
+                      : Image.asset(
+                          product.image,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: const Color(0xFFFFF0F5),
+                            child: const Icon(Icons.image_outlined, color: Colors.grey),
+                          ),
+                        ),
                 ),
               ),
 

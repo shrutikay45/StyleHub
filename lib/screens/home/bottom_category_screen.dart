@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/data/mock_products.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/widgets/product_card.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -33,11 +33,7 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
   @override
 
   Widget build(BuildContext context) {
-    final filteredProducts = mockProducts
-        .where(
-          (product) => product.category == selectedCategory,
-    )
-        .toList();
+    final filteredProducts = ProductService().getByCategory(selectedCategory);
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

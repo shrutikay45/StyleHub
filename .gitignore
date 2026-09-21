@@ -12,3 +12,13 @@ HELP.md
 # Decoupled Standalone Repositories & Docs
 admin-portal/
 AUTH_SYSTEM_DOCUMENTATION.md
+
+# Flutter build artifacts
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+

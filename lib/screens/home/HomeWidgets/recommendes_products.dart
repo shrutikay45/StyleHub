@@ -1,65 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/data/mock_products.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 
 class RecommendedProductsSection extends StatelessWidget {
   const RecommendedProductsSection({super.key});
 
-  // Mock product data
-  // static const List<Map<String, dynamic>> products = [
-  //   {
-  //     'name': 'Floral Summer Dress',
-  //     'price': '1,299',
-  //     'image': 'assets/images/dress1.webp',
-  //   },
-  //   {
-  //     'name': 'Elegant Casual Top',
-  //     'price': '899',
-  //     'image': 'assets/images/top1.webp',
-  //   },
-  //   {
-  //     'name': 'Women Denim Jeans',
-  //     'price': '1,499',
-  //     'image': 'assets/images/jeans1.webp',
-  //   },
-  //   {
-  //     'name': 'Classic Handbag',
-  //     'price': '1,199',
-  //     'image': 'assets/images/pink_bag.webp',
-  //   },
-  // ];
-
   @override
   Widget build(BuildContext context) {
+    final products = ProductService().getRecommendedProducts();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Recommended product section
-        const SizedBox(height: 24),
-
+        // Header
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
                 'Recommended for you',
                 style: TextStyle(
-                  color: Color(0xFF222222),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
-
-              const Spacer(),
-
               TextButton(
                 onPressed: () {},
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: const Text(
                   'View All',
                   style: TextStyle(
-                    color: Color(0xFF555555),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: Color(0xFFD81B60),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -75,7 +53,7 @@ class RecommendedProductsSection extends StatelessWidget {
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
+            itemCount: products.take(4).length,
             gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -84,7 +62,7 @@ class RecommendedProductsSection extends StatelessWidget {
               childAspectRatio: 0.68,
             ),
             itemBuilder: (context, index) {
-              final product = mockProducts[index];
+              final product = products[index];
 
               return GestureDetector(
                 onTap: () {
@@ -112,28 +90,31 @@ class RecommendedProductsSection extends StatelessWidget {
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(12),
                             ),
-                            child: Image.asset(
-                              product.image,
-                              height: 180,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (
-                                  context,
-                                  error,
-                                  stackTrace,
-                                  ) {
-                                return Container(
-                                  height: 180,
-                                  width: double.infinity,
-                                  color: const Color(0xFFF5F5F5),
-                                  child: const Icon(
-                                    Icons.image_outlined,
-                                    size: 40,
-                                    color: Color(0xFFAAAAAA),
+                            child: product.image.startsWith('http')
+                                ? Image.network(
+                                    product.image,
+                                    height: 180,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      height: 180,
+                                      width: double.infinity,
+                                      color: const Color(0xFFF5F5F5),
+                                      child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    product.image,
+                                    height: 180,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      height: 180,
+                                      width: double.infinity,
+                                      color: const Color(0xFFF5F5F5),
+                                      child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                    ),
                                   ),
-                                );
-                              },
-                            ),
                           ),
 
                         ],

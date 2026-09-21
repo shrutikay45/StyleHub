@@ -81,7 +81,7 @@ class FlashSale extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SaleProductsViewallScreen(),
+                        builder: (context) => const FlashSaleProductsScreen(),
                       ),
                     );
                   },

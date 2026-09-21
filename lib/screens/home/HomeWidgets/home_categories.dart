@@ -51,7 +51,9 @@ class HomeCategories extends StatelessWidget {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  _showAllCategoriesBottomSheet(context);
+                },
                 child: const Text(
                   'View All',
                   style: TextStyle(
@@ -118,6 +120,87 @@ class HomeCategories extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  void _showAllCategoriesBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'All Categories',
+                style: TextStyle(
+                  color: AppColors.dark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Flexible(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.75,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context); // Close bottom sheet
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CategoryProductsScreen(
+                              categoryName: category['name']!,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        children: [
+                          ClipOval(
+                            child: Image.asset(
+                              category['image']!,
+                              width: 55,
+                              height: 55,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            category['name']!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: AppColors.dark,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

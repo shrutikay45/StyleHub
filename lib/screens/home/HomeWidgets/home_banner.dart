@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/screens/home/CategoryProductsPage/category_products_screen.dart';
 
 class HomeBanner extends StatefulWidget {
   const HomeBanner({super.key});
@@ -84,18 +85,30 @@ class _HomeBannerState extends State<HomeBanner>
           // BANNER
           // =========================
 
-          SizedBox(
-            height: 200,
-            width: double.infinity,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _bannerImages.length,
-                onPageChanged: _onPageChanged,
-                itemBuilder: (context, index) {
-                  return _buildBanner(_bannerImages[index]);
-                },
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CategoryProductsScreen(
+                    categoryName: 'Special Offers',
+                  ),
+                ),
+              );
+            },
+            child: SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _bannerImages.length,
+                  onPageChanged: _onPageChanged,
+                  itemBuilder: (context, index) {
+                    return _buildBanner(_bannerImages[index]);
+                  },
+                ),
               ),
             ),
           ),

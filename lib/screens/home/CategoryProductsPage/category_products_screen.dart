@@ -14,12 +14,12 @@ class CategoryProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get only the products that belong to the selected category.
-    final List<Product> categoryProducts = mockProducts
-        .where(
-          (product) => product.category == categoryName,
-    )
-        .toList();
+    // Get products for category, or all products if 'Special Offers'
+    final List<Product> categoryProducts = categoryName == 'Special Offers'
+        ? mockProducts.toList()
+        : mockProducts
+            .where((product) => product.category == categoryName)
+            .toList();
 
     return Scaffold(
       backgroundColor: AppColors.softBackground,

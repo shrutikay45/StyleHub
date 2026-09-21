@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/data/mock_products.dart';
 import 'package:new_expense/models/product_model.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 
 class CategoryProductsScreen extends StatelessWidget {
@@ -14,12 +14,10 @@ class CategoryProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get products for category, or all products if 'Special Offers'
+    // Get products for category from ProductService
     final List<Product> categoryProducts = categoryName == 'Special Offers'
-        ? mockProducts.toList()
-        : mockProducts
-            .where((product) => product.category == categoryName)
-            .toList();
+        ? ProductService().allProducts
+        : ProductService().getByCategory(categoryName);
 
     return Scaffold(
       backgroundColor: AppColors.softBackground,
@@ -209,28 +207,41 @@ class _ProductCard extends StatelessWidget {
             // Product image
             Stack(
               children: [
-                Image.asset(
-                  product.image,
-                  width: double.infinity,
-                  height: 170,
-                  fit: BoxFit.cover,
-                  errorBuilder: (
-                      context,
-                      error,
-                      stackTrace,
-                      ) {
-                    return Container(
-                      width: double.infinity,
-                      height: 170,
-                      color: AppColors.blush,
-                      child: const Icon(
-                        Icons.image_outlined,
-                        size: 40,
-                        color: AppColors.lightGrey,
+                product.image.startsWith('http')
+                    ? Image.network(
+                        product.image,
+                        width: double.infinity,
+                        height: 170,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: double.infinity,
+                          height: 170,
+                          color: AppColors.blush,
+                          child: const Icon(Icons.image_outlined, size: 40, color: AppColors.lightGrey),
+                        ),
+                      )
+                    : Image.asset(
+                        product.image,
+                        width: double.infinity,
+                        height: 170,
+                        fit: BoxFit.cover,
+                        errorBuilder: (
+                            context,
+                            error,
+                            stackTrace,
+                            ) {
+                          return Container(
+                            width: double.infinity,
+                            height: 170,
+                            color: AppColors.blush,
+                            child: const Icon(
+                              Icons.image_outlined,
+                              size: 40,
+                              color: AppColors.lightGrey,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
 
               ],
             ),

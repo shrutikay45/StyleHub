@@ -3,10 +3,12 @@ import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/screens/auth/login_screen.dart';
 import 'package:new_expense/screens/home/main_bottom_nav.dart';
 import 'package:new_expense/services/auth_service.dart';
+import 'package:new_expense/services/product_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AuthService.initSession();
+  ProductService().fetchAllProducts();
   runApp(const MyApp());
 }
 

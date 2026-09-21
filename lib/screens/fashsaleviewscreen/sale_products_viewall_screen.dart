@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/data/mock_products.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
-// import 'package:new_expense/screens/product_detail_screen.dart';
 
 class FlashSaleProductsScreen extends StatelessWidget {
   const FlashSaleProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get all products that are currently on sale
-    final saleProducts = mockProducts
+    // Get all products that are currently on sale from ProductService
+    final saleProducts = ProductService()
+        .allProducts
         .where((product) => product.oldPrice > product.price)
         .toList();
 
@@ -184,12 +184,31 @@ class FlashSaleProductsScreen extends StatelessWidget {
                                 const BorderRadius.vertical(
                                   top: Radius.circular(14),
                                 ),
-                                child: Image.asset(
-                                  product.image,
-                                  height: 180,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: product.image.startsWith('http')
+                                    ? Image.network(
+                                        product.image,
+                                        height: 180,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          height: 180,
+                                          width: double.infinity,
+                                          color: const Color(0xFFF5F5F5),
+                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        product.image,
+                                        height: 180,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Container(
+                                          height: 180,
+                                          width: double.infinity,
+                                          color: const Color(0xFFF5F5F5),
+                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                        ),
+                                      ),
                               ),
                       
                               // SALE BADGE

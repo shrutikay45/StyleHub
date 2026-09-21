@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/data/mock_products.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/category_products_screen.dart';
+import 'package:new_expense/services/product_service.dart';
 
 class FeaturedProducts extends StatelessWidget {
   const FeaturedProducts({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final products = ProductService().getFeaturedProducts();
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
@@ -18,11 +20,9 @@ class FeaturedProducts extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               const Text(
                 'Featured Products',
                 style: TextStyle(
@@ -32,7 +32,7 @@ class FeaturedProducts extends StatelessWidget {
                 ),
               ),
 
-              // VALUE 365 BADGE
+              // VALUE 1599 BADGE
               Transform.rotate(
                 angle: -0.08,
                 child: Container(
@@ -70,19 +70,17 @@ class FeaturedProducts extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-
-          // featured PRODUCT LIST
+          // FEATURED PRODUCT LIST
           SizedBox(
             height: 190,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              itemCount: mockProducts.take(6).length,
+              itemCount: products.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(width: 12);
               },
               itemBuilder: (context, index) {
-
-                final product = mockProducts[index];
+                final product = products[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -90,7 +88,7 @@ class FeaturedProducts extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => CategoryProductsScreen(
-                              categoryName: product.category,
+                          categoryName: product.category,
                         ),
                       ),
                     );
@@ -107,10 +105,23 @@ class FeaturedProducts extends StatelessWidget {
                             width: 115,
                             height: 125,
                             color: Colors.white,
-                            child: Image.asset(
-                              product.image,
-                              fit: BoxFit.cover,
-                            ),
+                            child: product.image.startsWith('http')
+                                ? Image.network(
+                                    product.image,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: AppColors.blush,
+                                      child: const Icon(Icons.image_outlined, color: AppColors.lightGrey),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    product.image,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: AppColors.blush,
+                                      child: const Icon(Icons.image_outlined, color: AppColors.lightGrey),
+                                    ),
+                                  ),
                           ),
                         ),
 

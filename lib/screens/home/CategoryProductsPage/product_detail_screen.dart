@@ -116,8 +116,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                        });
                      },
                      itemBuilder: (context, index) {
+                       final img = product.images[index];
+                       if (img.startsWith('http')) {
+                         return Image.network(
+                           img,
+                           fit: BoxFit.cover,
+                           errorBuilder: (context, error, stackTrace) {
+                             return Container(
+                               color: AppColors.blush,
+                               child: const Icon(
+                                 Icons.image_outlined,
+                                 size: 55,
+                                 color: AppColors.lightGrey,
+                               ),
+                             );
+                           },
+                         );
+                       }
                        return Image.asset(
-                         product.images[index],
+                         img,
                          fit: BoxFit.cover,
                          errorBuilder: (
                              context,

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/data/mock_products.dart';
+import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 
 class RecentlyViewedProducts extends StatelessWidget {
   const RecentlyViewedProducts({super.key});
 
-  // helper for flash sale
-
   @override
   Widget build(BuildContext context) {
-    return   Column(
+    final products = ProductService().getRecentlyViewedProducts();
+    return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -27,16 +26,15 @@ class RecentlyViewedProducts extends StatelessWidget {
                 ),
               ),
 
-              // Arrow button
               Container(
-                width: 38,
-                height: 38,
+                height: 34,
+                width: 34,
                 decoration: const BoxDecoration(
-                  color: AppColors.primary,
+                  color: AppColors.dark,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.arrow_forward,
+                  Icons.arrow_forward_outlined,
                   color: AppColors.background,
                   size: 19,
                 ),
@@ -50,7 +48,7 @@ class RecentlyViewedProducts extends StatelessWidget {
           child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: mockProducts.take(6).length,
+            itemCount: products.take(6).length,
             gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
@@ -59,7 +57,7 @@ class RecentlyViewedProducts extends StatelessWidget {
               childAspectRatio: 0.58,
             ),
             itemBuilder: (context, index) {
-              final product = mockProducts[index];
+              final product = products[index];
 
               return GestureDetector(
                 onTap: () {
@@ -89,10 +87,23 @@ class RecentlyViewedProducts extends StatelessWidget {
                             child: Container(
                               width: double.infinity,
                               color: AppColors.background,
-                              child: Image.asset(
-                                product.image,
-                                fit: BoxFit.cover,
-                              ),
+                              child: product.image.startsWith('http')
+                                  ? Image.network(
+                                      product.image,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: AppColors.blush,
+                                        child: const Icon(Icons.image_outlined, color: AppColors.lightGrey),
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      product.image,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: AppColors.blush,
+                                        child: const Icon(Icons.image_outlined, color: AppColors.lightGrey),
+                                      ),
+                                    ),
                             ),
                           ),
                 

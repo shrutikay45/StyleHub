@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 
 class RecommendedProductsSection extends StatelessWidget {
   const RecommendedProductsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final products = ProductService().getRecommendedProducts();
+    final service = ProductService();
+    final products = service.getRecommendedProducts();
+    final isLoading = service.isLoading && products.isEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,22 +49,23 @@ class RecommendedProductsSection extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 4),
+        const SizedBox(height: 10),
 
-        // Product list
+        // Product list or Skeleton
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: products.take(4).length,
-            gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.68,
-            ),
+          child: isLoading
+              ? const ProductGridSkeleton(itemCount: 4)
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: products.take(4).length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.68,
+                  ),
             itemBuilder: (context, index) {
               final product = products[index];
 

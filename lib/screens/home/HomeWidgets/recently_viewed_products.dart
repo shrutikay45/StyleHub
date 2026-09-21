@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 
 class RecentlyViewedProducts extends StatelessWidget {
   const RecentlyViewedProducts({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final products = ProductService().getRecentlyViewedProducts();
+    final service = ProductService();
+    final products = service.getRecentlyViewedProducts();
+    final isLoading = service.isLoading && products.isEmpty;
+
     return Column(
       children: [
         Padding(
@@ -16,7 +20,6 @@ class RecentlyViewedProducts extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               const Text(
                 'Recently Viewed',
                 style: TextStyle(
@@ -42,20 +45,21 @@ class RecentlyViewedProducts extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 18),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: products.take(6).length,
-            gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 18,
-              childAspectRatio: 0.58,
-            ),
+          child: isLoading
+              ? const ProductGridSkeleton(itemCount: 3)
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: products.take(6).length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 18,
+                    childAspectRatio: 0.58,
+                  ),
             itemBuilder: (context, index) {
               final product = products[index];
 

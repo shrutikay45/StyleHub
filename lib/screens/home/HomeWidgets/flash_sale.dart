@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/fashsaleviewscreen/sale_products_viewall_screen.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 
 class FlashSale extends StatelessWidget {
   const FlashSale({super.key});
@@ -29,7 +30,9 @@ class FlashSale extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final flashProducts = ProductService().getFlashSaleProducts();
+    final service = ProductService();
+    final flashProducts = service.getFlashSaleProducts();
+    final isLoading = service.isLoading && flashProducts.isEmpty;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
@@ -52,17 +55,17 @@ class FlashSale extends StatelessWidget {
             children: [
 
               Row(
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     '🔥',
                     style: TextStyle(
                       fontSize: 21,
                     ),
                   ),
 
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
 
-                  const Text(
+                  Text(
                     'Flash Sale',
                     style: TextStyle(
                       fontSize: 23,
@@ -74,56 +77,40 @@ class FlashSale extends StatelessWidget {
               ),
 
               GestureDetector(
-                  // Later we will navigate to the full sale page
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                        const FlashSaleProductsScreen(),
+                        builder: (context) => const SaleProductsViewallScreen(),
                       ),
                     );
                   },
-                child: const Text(
-                  'View All →',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFD81B60),
-                  ),
-                ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD81B60),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'View All',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
               ),
             ],
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
 
           // ---------------------------
-          // SALE SUBTITLE
-          // ---------------------------
-          const Text(
-            'Up to 50% OFF',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF222222),
-            ),
-          ),
-
-          const SizedBox(height: 3),
-
-          const Text(
-            'Limited time only',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF777070),
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          // ---------------------------
-          // COUNTDOWN
+          // TIMER
           // ---------------------------
           Row(
             children: [
@@ -154,129 +141,129 @@ class FlashSale extends StatelessWidget {
           const SizedBox(height: 18),
 
           // ---------------------------
-          // PRODUCTS
+          // PRODUCTS OR SHIMMER SKELETON
           // ---------------------------
           SizedBox(
             height: 205,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: flashProducts.length,
-              separatorBuilder: (context, index) {
-                return const SizedBox(width: 12);
-              },
-              itemBuilder: (context, index) {
+            child: isLoading
+                ? ShimmerEffect(
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 4,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder: (_, __) => const FlashSaleCardSkeleton(),
+                    ),
+                  )
+                : ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: flashProducts.length,
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(width: 12);
+                    },
+                    itemBuilder: (context, index) {
+                      final product = flashProducts[index];
 
-                final product = flashProducts[index];
-
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailsScreen(
-                          product: product,
-                        ),
-                      ),
-                    );
-                  },
-                  child: SizedBox(
-                    width: 125,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-
-                        // PRODUCT IMAGE
-                        Stack(
-                          children: [
-
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(18),
-                              child: Container(
-                                width: 125,
-                                height: 135,
-                                color: Colors.white,
-                                child: product.image.startsWith('http')
-                                    ? Image.network(
-                                        product.image,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: const Color(0xFFFCE4EC),
-                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
-                                        ),
-                                      )
-                                    : Image.asset(
-                                        product.image,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => Container(
-                                          color: const Color(0xFFFCE4EC),
-                                          child: const Icon(Icons.image_outlined, color: Colors.grey),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProductDetailsScreen(
+                                product: product,
+                              ),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: 125,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // PRODUCT IMAGE
+                              Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(18),
+                                    child: Container(
+                                      width: 125,
+                                      height: 135,
+                                      color: Colors.white,
+                                      child: product.image.startsWith('http')
+                                          ? Image.network(
+                                              product.image,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => Container(
+                                                color: const Color(0xFFFCE4EC),
+                                                child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                              ),
+                                            )
+                                          : Image.asset(
+                                              product.image,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => Container(
+                                                color: const Color(0xFFFCE4EC),
+                                                child: const Icon(Icons.image_outlined, color: Colors.grey),
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  // DISCOUNT BADGE
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFD81B60),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Text(
+                                        'SALE',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
                                         ),
                                       ),
-                              ),
-                            ),
-
-                            // DISCOUNT BADGE
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD81B60),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: const Text(
-                                  'SALE',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
+                                    ),
                                   ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              // PRODUCT NAME
+                              Text(
+                                product.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF222222),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // PRODUCT NAME
-                        Text(
-                          product.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF222222),
+                              const SizedBox(height: 3),
+                              // PRICE
+                              Text(
+                                '₹${product.price.toStringAsFixed(0)}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF222222),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-
-                        const SizedBox(height: 3),
-
-                        // PRICE
-                        Text(
-                          '₹${product.price.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF222222),
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
     );
-
   }
 }
 

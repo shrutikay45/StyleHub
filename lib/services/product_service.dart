@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/product_model.dart';
-import '../data/mock_products.dart';
 import 'api_config.dart';
 
 class ProductService extends ChangeNotifier {
@@ -12,13 +11,16 @@ class ProductService extends ChangeNotifier {
 
   List<Product> _allProducts = [];
   bool _isLoading = false;
+  bool _hasFetched = false;
   String? _errorMessage;
 
-  List<Product> get allProducts => _allProducts.isNotEmpty ? _allProducts : mockProducts;
+  List<Product> get allProducts => _allProducts;
   bool get isLoading => _isLoading;
+  bool get hasFetched => _hasFetched;
+  bool get isEmpty => _hasFetched && _allProducts.isEmpty;
   String? get errorMessage => _errorMessage;
 
-  // Initialize and fetch products with smooth fallback
+  // Initialize and fetch products strictly from Backend API
   Future<List<Product>> fetchAllProducts({bool forceRefresh = false}) async {
     if (_allProducts.isNotEmpty && !forceRefresh) {
       return _allProducts;
@@ -31,7 +33,7 @@ class ProductService extends ChangeNotifier {
     try {
       final url = Uri.parse('${ApiConfig.products}?size=100');
       final response = await http.get(url, headers: ApiConfig.headers()).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -52,54 +54,52 @@ class ProductService extends ChangeNotifier {
           items = decoded;
         }
 
-        if (items.isNotEmpty) {
-          _allProducts = items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-        } else {
-          _allProducts = mockProducts;
-        }
+        _allProducts = items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
+        _hasFetched = true;
       } else {
-        _allProducts = mockProducts;
+        _errorMessage = 'Could not load products (${response.statusCode})';
       }
     } catch (e) {
       debugPrint('ProductService fetch error: $e');
-      _allProducts = mockProducts;
+      _errorMessage = 'Network error: Please check internet connection.';
     } finally {
       _isLoading = false;
       notifyListeners();
     }
 
-    return allProducts;
+    return _allProducts;
   }
 
-  // Get products by category
+  // Get products by category from live data
   List<Product> getByCategory(String category) {
     if (category.toLowerCase() == 'all' || category.trim().isEmpty) {
-      return allProducts;
+      return _allProducts;
     }
-    return allProducts.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
+    return _allProducts.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
   }
 
-  // Get Featured products
+  // Get Featured products from live data
   List<Product> getFeaturedProducts() {
-    final featured = allProducts.where((p) => p.featured).toList();
+    final featured = _allProducts.where((p) => p.featured).toList();
     if (featured.isNotEmpty) return featured;
-    return allProducts.take(6).toList();
+    return _allProducts.take(8).toList();
   }
 
-  // Get Flash Sale products
+  // Get Flash Sale products from live data
   List<Product> getFlashSaleProducts() {
-    final flash = allProducts.where((p) => p.flashSale).toList();
+    final flash = _allProducts.where((p) => p.flashSale).toList();
     if (flash.isNotEmpty) return flash;
-    return allProducts.skip(2).take(6).toList();
+    return _allProducts.skip(2).take(8).toList();
   }
 
-  // Get Recommended products
+  // Get Recommended products from live data
   List<Product> getRecommendedProducts() {
-    return allProducts.skip(4).take(8).toList();
+    return _allProducts.skip(4).take(8).toList();
   }
 
-  // Get Recently Viewed products
+  // Get Recently Viewed products from live data
   List<Product> getRecentlyViewedProducts() {
-    return allProducts.skip(1).take(6).toList();
+    return _allProducts.skip(1).take(6).toList();
   }
 }
+

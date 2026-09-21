@@ -3,6 +3,7 @@ import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/models/product_model.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 
 class CategoryProductsScreen extends StatelessWidget {
   final String categoryName;
@@ -129,18 +130,24 @@ class CategoryProductsScreen extends StatelessWidget {
             ),
           ),
 
-          // Products
+          // Products or Skeleton
           Expanded(
-            child: categoryProducts.isEmpty
-                ? const Center(
-              child: Text(
-                'No products found',
-                style: TextStyle(
-                  color: AppColors.grey,
-                  fontSize: 16,
-                ),
-              ),
-            )
+            child: (ProductService().isLoading && categoryProducts.isEmpty)
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: ProductGridSkeleton(itemCount: 6),
+                  )
+                : categoryProducts.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No products found in this category',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      )
                 : GridView.builder(
               padding: const EdgeInsets.fromLTRB(
                 16,

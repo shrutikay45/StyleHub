@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/screens/home/CategoryProductsPage/category_products_screen.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 import 'package:new_expense/widgets/shimmer_loading.dart';
@@ -30,7 +31,16 @@ class RecommendedProductsSection extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CategoryProductsScreen(
+                        categoryName: 'Recommended for you',
+                      ),
+                    ),
+                  );
+                },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   minimumSize: Size.zero,

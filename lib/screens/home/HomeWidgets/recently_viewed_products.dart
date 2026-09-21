@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/screens/home/CategoryProductsPage/category_products_screen.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 import 'package:new_expense/widgets/shimmer_loading.dart';
@@ -29,17 +30,27 @@ class RecentlyViewedProducts extends StatelessWidget {
                 ),
               ),
 
-              Container(
-                height: 34,
-                width: 34,
-                decoration: const BoxDecoration(
-                  color: AppColors.dark,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.arrow_forward_outlined,
-                  color: AppColors.background,
-                  size: 19,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CategoryProductsScreen(categoryName: 'Recently Viewed'),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 34,
+                  width: 34,
+                  decoration: const BoxDecoration(
+                    color: AppColors.dark,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_outlined,
+                    color: AppColors.background,
+                    size: 19,
+                  ),
                 ),
               ),
             ],

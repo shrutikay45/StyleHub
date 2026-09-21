@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/core/constants/app_colors.dart';
 
 class ShimmerEffect extends StatefulWidget {
   final Widget child;

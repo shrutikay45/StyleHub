@@ -12,6 +12,10 @@ class HomeCategories extends StatelessWidget {
       'image': 'assets/images/dress1.webp',
     },
     {
+      'name': 'Jeans',
+      'image': 'assets/images/jeans.webp',
+    },
+    {
       'name': 'Tops',
       'image': 'assets/images/top.webp',
     },
@@ -20,16 +24,40 @@ class HomeCategories extends StatelessWidget {
       'image': 'assets/images/tshirt.webp',
     },
     {
-      'name': 'Footwear',
-      'image': 'assets/images/footwear.webp',
+      'name': 'Kurtis',
+      'image': 'assets/images/kurti.webp',
+    },
+    {
+      'name': 'Sarees',
+      'image': 'assets/images/saree.webp',
+    },
+    {
+      'name': 'Shoes',
+      'image': 'assets/images/shoes.webp',
     },
     {
       'name': 'Bags',
-      'image': 'assets/images/pink_bag.webp',
+      'image': 'assets/images/black_bag.webp',
     },
     {
-      'name': 'Accessories',
-      'image': 'assets/images/accessories.webp',
+      'name': 'Co-ords',
+      'image': 'assets/images/coord.webp',
+    },
+    {
+      'name': 'Skirts',
+      'image': 'assets/images/skirts.webp',
+    },
+    {
+      'name': 'Ethnic Wear',
+      'image': 'assets/images/ethnic.webp',
+    },
+    {
+      'name': 'Western Wear',
+      'image': 'assets/images/western.webp',
+    },
+    {
+      'name': 'Jewellery',
+      'image': 'assets/images/jewellery.webp',
     },
   ];
 

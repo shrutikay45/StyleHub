@@ -56,8 +56,10 @@ class ProductService extends ChangeNotifier {
 
         _allProducts = items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
         _hasFetched = true;
+        debugPrint('ProductService: Loaded ${_allProducts.length} live products successfully.');
       } else {
         _errorMessage = 'Could not load products (${response.statusCode})';
+        debugPrint('ProductService: API Error ${response.statusCode}: ${response.body}');
       }
     } catch (e) {
       debugPrint('ProductService fetch error: $e');
@@ -75,7 +77,11 @@ class ProductService extends ChangeNotifier {
     if (category.toLowerCase() == 'all' || category.trim().isEmpty) {
       return _allProducts;
     }
-    return _allProducts.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
+    final target = category.toLowerCase().replaceAll('-', '').replaceAll(' ', '').trim();
+    return _allProducts.where((p) {
+      final cat = p.category.toLowerCase().replaceAll('-', '').replaceAll(' ', '').trim();
+      return cat == target || cat.contains(target) || target.contains(cat);
+    }).toList();
   }
 
   // Get Featured products from live data

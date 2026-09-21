@@ -1,13 +1,59 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/fashsaleviewscreen/sale_products_viewall_screen.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 import 'package:new_expense/widgets/shimmer_loading.dart';
 
-class FlashSale extends StatelessWidget {
+class FlashSale extends StatefulWidget {
   const FlashSale({super.key});
 
-  // helper for flash sale
+  @override
+  State<FlashSale> createState() => _FlashSaleState();
+}
+
+class _FlashSaleState extends State<FlashSale> {
+  late Timer _timer;
+  late Duration _remainingTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _initTimer();
+  }
+
+  void _initTimer() {
+    // Calculates remaining time until next scheduled sale mark (e.g. 6-hour cycle)
+    final now = DateTime.now();
+    final nextCycleHour = ((now.hour ~/ 6) + 1) * 6;
+    final endOfCycle = DateTime(now.year, now.month, now.day, nextCycleHour % 24);
+    final target = nextCycleHour >= 24
+        ? endOfCycle.add(const Duration(days: 1))
+        : endOfCycle;
+    _remainingTime = target.difference(now);
+    if (_remainingTime.isNegative || _remainingTime.inSeconds == 0) {
+      _remainingTime = const Duration(hours: 5, minutes: 45, seconds: 20);
+    }
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        if (_remainingTime.inSeconds > 0) {
+          _remainingTime = _remainingTime - const Duration(seconds: 1);
+        } else {
+          _remainingTime = const Duration(hours: 6);
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  // helper for flash sale time box
   Widget _saleTimeBox(String time) {
     return Container(
       width: 32,
@@ -33,6 +79,11 @@ class FlashSale extends StatelessWidget {
     final service = ProductService();
     final flashProducts = service.getFlashSaleProducts();
     final isLoading = service.isLoading && flashProducts.isEmpty;
+
+    final hours = _remainingTime.inHours.toString().padLeft(2, '0');
+    final minutes = (_remainingTime.inMinutes % 60).toString().padLeft(2, '0');
+    final seconds = (_remainingTime.inSeconds % 60).toString().padLeft(2, '0');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
@@ -46,14 +97,12 @@ class FlashSale extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           // ---------------------------
           // HEADER
           // ---------------------------
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               Row(
                 children: const [
                   Text(
@@ -62,9 +111,7 @@ class FlashSale extends StatelessWidget {
                       fontSize: 21,
                     ),
                   ),
-
                   SizedBox(width: 6),
-
                   Text(
                     'Flash Sale',
                     style: TextStyle(
@@ -75,34 +122,33 @@ class FlashSale extends StatelessWidget {
                   ),
                 ],
               ),
-
               GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FlashSaleProductsScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FlashSaleProductsScreen(),
                     ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD81B60),
-                      borderRadius: BorderRadius.circular(20),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD81B60),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    'View All',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
-                    child: const Text(
-                      'View All',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
+                  ),
+                ),
               ),
             ],
           ),
@@ -110,11 +156,10 @@ class FlashSale extends StatelessWidget {
           const SizedBox(height: 12),
 
           // ---------------------------
-          // TIMER
+          // LIVE TICKING TIMER
           // ---------------------------
           Row(
             children: [
-
               const Text(
                 'Ends in',
                 style: TextStyle(
@@ -123,18 +168,16 @@ class FlashSale extends StatelessWidget {
                   color: Color(0xFF555555),
                 ),
               ),
-
               const SizedBox(width: 8),
-
-              _saleTimeBox('02'),
+              _saleTimeBox(hours),
               const SizedBox(width: 4),
-              const Text(':'),
+              const Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFD81B60))),
               const SizedBox(width: 4),
-              _saleTimeBox('14'),
+              _saleTimeBox(minutes),
               const SizedBox(width: 4),
-              const Text(':'),
+              const Text(':', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFD81B60))),
               const SizedBox(width: 4),
-              _saleTimeBox('36'),
+              _saleTimeBox(seconds),
             ],
           ),
 

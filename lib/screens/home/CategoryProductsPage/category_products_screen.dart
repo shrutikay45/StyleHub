@@ -16,9 +16,11 @@ class CategoryProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get products for category from ProductService
-    final List<Product> categoryProducts = categoryName == 'Special Offers'
+    final List<Product> categoryProducts = (categoryName == 'Special Offers' || categoryName == 'All' || categoryName == 'Recently Viewed')
         ? ProductService().allProducts
-        : ProductService().getByCategory(categoryName);
+        : (categoryName == 'Recommended for you'
+            ? ProductService().getRecommendedProducts()
+            : ProductService().getByCategory(categoryName));
 
     return Scaffold(
       backgroundColor: AppColors.softBackground,

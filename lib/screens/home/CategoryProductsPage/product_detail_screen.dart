@@ -75,11 +75,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     });
                   },
                   itemBuilder: (context, index) {
-                    return Image.asset(
-                      widget.product.images[index],
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    );
+                    final imgPath = widget.product.images[index];
+                    return imgPath.startsWith('http')
+                        ? Image.network(
+                            imgPath,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: const Color(0xFFFFF0F5),
+                              child: const Icon(Icons.image_outlined, size: 60, color: Colors.grey),
+                            ),
+                          )
+                        : Image.asset(
+                            imgPath,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              color: const Color(0xFFFFF0F5),
+                              child: const Icon(Icons.image_outlined, size: 60, color: Colors.grey),
+                            ),
+                          );
                   },
                 ),
 

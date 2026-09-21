@@ -554,23 +554,37 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                item.product.image,
-                fit: BoxFit.cover,
-                errorBuilder: (
-                    context,
-                    error,
-                    stackTrace,
-                    ) {
-                  return const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      color: AppColors.lightGrey,
-                      size: 28,
+              child: item.product.image.startsWith('http')
+                  ? Image.network(
+                      item.product.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            color: AppColors.lightGrey,
+                            size: 28,
+                          ),
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      item.product.image,
+                      fit: BoxFit.cover,
+                      errorBuilder: (
+                          context,
+                          error,
+                          stackTrace,
+                          ) {
+                        return const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            color: AppColors.lightGrey,
+                            size: 28,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ),
 

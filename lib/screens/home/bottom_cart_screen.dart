@@ -89,28 +89,46 @@ class _CartScreenState extends State<BottomCartScreen> {
                       ClipRRect(
                         borderRadius:
                         BorderRadius.circular(10),
-                        child: Image.asset(
-                          item.product.image,
-                          width: 90,
-                          height: 110,
-                          fit: BoxFit.cover,
-                          errorBuilder: (
-                              context,
-                              error,
-                              stackTrace,
-                              ) {
-                            return Container(
-                              width: 90,
-                              height: 110,
-                              color: AppColors.blush,
-                              child: const Icon(
-                                Icons.image_outlined,
-                                color:
-                                AppColors.lightGrey,
+                        child: item.product.image.startsWith('http')
+                            ? Image.network(
+                                item.product.image,
+                                width: 90,
+                                height: 110,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 90,
+                                    height: 110,
+                                    color: AppColors.blush,
+                                    child: const Icon(
+                                      Icons.image_outlined,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                item.product.image,
+                                width: 90,
+                                height: 110,
+                                fit: BoxFit.cover,
+                                errorBuilder: (
+                                    context,
+                                    error,
+                                    stackTrace,
+                                    ) {
+                                  return Container(
+                                    width: 90,
+                                    height: 110,
+                                    color: AppColors.blush,
+                                    child: const Icon(
+                                      Icons.image_outlined,
+                                      color:
+                                      AppColors.lightGrey,
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(

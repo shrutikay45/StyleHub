@@ -34,6 +34,7 @@ class Product {
   String get image => images.isNotEmpty ? images.first : 'assets/images/dress6.webp';
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    final catName = (json['categoryName'] ?? json['category'] ?? '').toString().toLowerCase();
     List<String> imgList = [];
     if (json['images'] != null && json['images'] is List) {
       imgList = (json['images'] as List)
@@ -42,7 +43,35 @@ class Product {
           .toList();
     }
     if (imgList.isEmpty) {
-      imgList = ['assets/images/dress6.webp'];
+      if (catName.contains('dress')) {
+        imgList = ['assets/images/dress6.webp', 'assets/images/dress7.webp'];
+      } else if (catName.contains('top')) {
+        imgList = ['assets/images/top1.webp', 'assets/images/top2.webp'];
+      } else if (catName.contains('jean')) {
+        imgList = ['assets/images/jeans1.webp', 'assets/images/jeans2.webp'];
+      } else if (catName.contains('t-shirt') || catName.contains('tshirt')) {
+        imgList = ['assets/images/tshirt1.webp', 'assets/images/tshirt2.webp'];
+      } else if (catName.contains('kurti')) {
+        imgList = ['assets/images/kurti1.webp', 'assets/images/kurti2.webp'];
+      } else if (catName.contains('saree')) {
+        imgList = ['assets/images/saree1.webp', 'assets/images/saree2.webp'];
+      } else if (catName.contains('shoe') || catName.contains('footwear')) {
+        imgList = ['assets/images/shoes1.webp', 'assets/images/shoes2.webp'];
+      } else if (catName.contains('bag')) {
+        imgList = ['assets/images/black_bag.webp', 'assets/images/brown_bag.webp'];
+      } else if (catName.contains('jewel')) {
+        imgList = ['assets/images/jeweller1.webp', 'assets/images/jewellery2.webp'];
+      } else if (catName.contains('skirt')) {
+        imgList = ['assets/images/skirt1.webp', 'assets/images/skirt2.webp'];
+      } else if (catName.contains('coord') || catName.contains('co-ord')) {
+        imgList = ['assets/images/coord1.webp', 'assets/images/coord2.webp'];
+      } else if (catName.contains('western')) {
+        imgList = ['assets/images/western1.webp', 'assets/images/western2.webp'];
+      } else if (catName.contains('ethnic')) {
+        imgList = ['assets/images/ethnic1.webp', 'assets/images/ethnic2.webp'];
+      } else {
+        imgList = ['assets/images/dress6.webp'];
+      }
     }
 
     double parsedPrice = 0.0;

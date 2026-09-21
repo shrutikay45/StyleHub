@@ -255,23 +255,39 @@ class _WishlistScreenState extends State<WishlistScreen> {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: Image.asset(
-                      product.image,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) {
-                        return Container(
-                          color: AppColors.primaryLight.withOpacity(0.3),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported_outlined,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
+                    child: product.image.startsWith('http')
+                        ? Image.network(
+                            product.image,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primaryLight.withOpacity(0.3),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Image.asset(
+                            product.image,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: AppColors.primaryLight.withOpacity(0.3),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
 
 

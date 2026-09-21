@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/product_model.dart';
-import '../data/mock_products.dart';
 import 'api_config.dart';
 
 class ProductService extends ChangeNotifier {
@@ -14,11 +13,11 @@ class ProductService extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<Product> get allProducts => _allProducts.isNotEmpty ? _allProducts : mockProducts;
+  List<Product> get allProducts => _allProducts;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  // Initialize and fetch products
+  // Initialize and fetch products strictly from Live API
   Future<List<Product>> fetchAllProducts({bool forceRefresh = false}) async {
     if (_allProducts.isNotEmpty && !forceRefresh) {
       return _allProducts;
@@ -31,7 +30,7 @@ class ProductService extends ChangeNotifier {
     try {
       final url = Uri.parse('${ApiConfig.products}?size=100');
       final response = await http.get(url, headers: ApiConfig.headers()).timeout(
-        const Duration(seconds: 10),
+        const Duration(seconds: 15),
       );
 
       if (response.statusCode == 200) {
@@ -52,18 +51,13 @@ class ProductService extends ChangeNotifier {
           items = decoded;
         }
 
-        if (items.isNotEmpty) {
-          _allProducts = items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
-        } else {
-          // If backend returned empty list, fall back to mockProducts
-          _allProducts = mockProducts;
-        }
+        _allProducts = items.map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
       } else {
-        _allProducts = mockProducts;
+        debugPrint('ProductService: Non-200 status code (${response.statusCode})');
       }
     } catch (e) {
-      debugPrint('ProductService fetch error (using fallback): $e');
-      _allProducts = mockProducts;
+      debugPrint('ProductService fetch error: $e');
+      _errorMessage = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -75,32 +69,32 @@ class ProductService extends ChangeNotifier {
   // Get products by category
   List<Product> getByCategory(String category) {
     if (category.toLowerCase() == 'all' || category.trim().isEmpty) {
-      return allProducts;
+      return _allProducts;
     }
-    return allProducts.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
+    return _allProducts.where((p) => p.category.toLowerCase() == category.toLowerCase()).toList();
   }
 
   // Get Featured products
   List<Product> getFeaturedProducts() {
-    final featured = allProducts.where((p) => p.featured).toList();
+    final featured = _allProducts.where((p) => p.featured).toList();
     if (featured.isNotEmpty) return featured;
-    return allProducts.take(6).toList();
+    return _allProducts.take(6).toList();
   }
 
   // Get Flash Sale products
   List<Product> getFlashSaleProducts() {
-    final flash = allProducts.where((p) => p.flashSale).toList();
+    final flash = _allProducts.where((p) => p.flashSale).toList();
     if (flash.isNotEmpty) return flash;
-    return allProducts.skip(2).take(6).toList();
+    return _allProducts.skip(2).take(6).toList();
   }
 
   // Get Recommended products
   List<Product> getRecommendedProducts() {
-    return allProducts.skip(4).take(8).toList();
+    return _allProducts.skip(4).take(8).toList();
   }
 
   // Get Recently Viewed products
   List<Product> getRecentlyViewedProducts() {
-    return allProducts.skip(1).take(6).toList();
+    return _allProducts.skip(1).take(6).toList();
   }
 }

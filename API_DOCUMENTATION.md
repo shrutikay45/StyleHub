@@ -1,7 +1,7 @@
 # E-Commerce Mobile App — Complete API List
 
 Ek hi file me pura API list — saare endpoints, method, aur kis controller file
-me hain wo bhi bata diya h   ek br appke end se check kr lena . Base URL local run pe: `http://localhost:8080`
+me hain wo bhi bataya gaya hai. Base URL local run pe: `http://localhost:8080`
 
 Auth wale endpoints me header chahiye: `Authorization: Bearer <accessToken>`
 (jo `/api/auth/login` ya `/api/auth/register` se milta hai).

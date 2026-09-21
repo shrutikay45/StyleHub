@@ -1,0 +1,372 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.new_expense"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+9        android:targetSdkVersion="35" />
+10    <!--
+11         The INTERNET permission is required for development. Specifically,
+12         the Flutter tool needs it to communicate with the running application
+13         to allow setting breakpoints, to provide hot reload, etc.
+14    -->
+15    <uses-permission android:name="android.permission.INTERNET" />
+15-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:2:5-66
+15-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:2:22-64
+16    <!--
+17     Required to query activities that can process text, see:
+18         https://developer.android.com/training/package-visibility and
+19         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+20
+21         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin.
+22    -->
+23    <queries>
+23-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:40:5-45:15
+24        <intent>
+24-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:41:9-44:18
+25            <action android:name="android.intent.action.PROCESS_TEXT" />
+25-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:42:13-72
+25-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:42:21-70
+26
+27            <data android:mimeType="text/plain" />
+27-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+27-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:19-48
+28        </intent>
+29        <intent>
+29-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:16:9-22:18
+30            <action android:name="android.intent.action.VIEW" />
+30-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:13-65
+30-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:21-62
+31
+32            <data
+32-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+33                android:mimeType="*/*"
+33-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:19-48
+34                android:scheme="*" />
+35        </intent>
+36        <intent>
+36-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:23:9-32:18
+37            <action android:name="android.intent.action.VIEW" />
+37-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:13-65
+37-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:21-62
+38
+39            <category android:name="android.intent.category.BROWSABLE" />
+39-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:26:13-74
+39-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:26:23-71
+40
+41            <data
+41-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+42                android:host="pay"
+43                android:mimeType="*/*"
+43-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:19-48
+44                android:scheme="upi" />
+45        </intent>
+46        <intent>
+46-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:33:9-35:18
+47            <action android:name="android.intent.action.MAIN" />
+47-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:13-65
+47-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:21-62
+48        </intent>
+49        <intent>
+49-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:36:9-40:18
+50            <action android:name="android.intent.action.SEND" />
+50-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:37:13-65
+50-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:37:21-62
+51
+52            <data android:mimeType="*/*" />
+52-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+52-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:19-48
+53        </intent>
+54        <intent>
+54-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:41:9-43:18
+55            <action android:name="rzp.device_token.share" />
+55-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:42:13-61
+55-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:42:21-58
+56        </intent>
+57        <intent>
+57-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:17:9-21:18
+58            <action android:name="android.intent.action.VIEW" />
+58-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:13-65
+58-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:21-62
+59
+60            <data android:scheme="upi" />
+60-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+61        </intent>
+62    </queries>
+63
+64    <uses-permission android:name="android.permission.NFC" />
+64-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:9:5-62
+64-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:9:22-59
+65
+66    <uses-feature
+66-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:11:5-13:36
+67        android:name="android.hardware.nfc"
+67-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:12:9-44
+68        android:required="false" /> <!-- Include required permissions for Google Maps API to run. -->
+68-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:13:9-33
+69    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+69-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:23:5-79
+69-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:23:22-76
+70
+71    <uses-feature
+71-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:26:5-28:35
+72        android:glEsVersion="0x00020000"
+72-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:27:9-41
+73        android:required="true" />
+73-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:28:9-32
+74
+75    <permission
+75-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+76        android:name="com.example.new_expense.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+76-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+77        android:protectionLevel="signature" />
+77-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+78
+79    <uses-permission android:name="com.example.new_expense.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Normal permission, automatically granted on API 23+ -->
+79-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+79-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+80    <uses-permission android:name="android.permission.READ_BASIC_PHONE_STATE" />
+80-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:10:5-81
+80-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:10:22-78
+81
+82    <application
+83        android:name="android.app.Application"
+84        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+84-->[androidx.core:core:1.13.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\4cefa050b0c4ea9b1f45909d19944071\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+85        android:debuggable="true"
+86        android:extractNativeLibs="false"
+87        android:icon="@mipmap/ic_launcher"
+88        android:label="new_expense" >
+89        <activity
+90            android:name="com.example.new_expense.MainActivity"
+91            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+92            android:exported="true"
+93            android:hardwareAccelerated="true"
+94            android:launchMode="singleTop"
+95            android:taskAffinity=""
+96            android:theme="@style/LaunchTheme"
+97            android:windowSoftInputMode="adjustResize" >
+98
+99            <!--
+100                 Specifies an Android theme to apply to this Activity as soon as
+101                 the Android process has started. This theme is visible to the user
+102                 while the Flutter UI initializes. After that, this theme continues
+103                 to determine the Window background behind the Flutter UI.
+104            -->
+105            <meta-data
+106                android:name="io.flutter.embedding.android.NormalTheme"
+107                android:resource="@style/NormalTheme" />
+108
+109            <intent-filter>
+110                <action android:name="android.intent.action.MAIN" />
+110-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:13-65
+110-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:21-62
+111
+112                <category android:name="android.intent.category.LAUNCHER" />
+113            </intent-filter>
+114        </activity>
+115        <!--
+116             Don't delete the meta-data below.
+117             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
+118        -->
+119        <meta-data
+120            android:name="flutterEmbedding"
+121            android:value="2" />
+122
+123        <activity
+123-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:47:9-55:20
+124            android:name="com.razorpay.CheckoutActivity"
+124-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:48:13-57
+125            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+125-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:49:13-83
+126            android:exported="false"
+126-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:50:13-37
+127            android:theme="@style/CheckoutTheme" >
+127-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:51:13-49
+128            <intent-filter>
+128-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:52:13-54:29
+129                <action android:name="android.intent.action.MAIN" />
+129-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:13-65
+129-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:34:21-62
+130            </intent-filter>
+131        </activity>
+132
+133        <provider
+133-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:57:9-68:20
+134            android:name="androidx.startup.InitializationProvider"
+134-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:58:13-67
+135            android:authorities="com.example.new_expense.androidx-startup"
+135-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:59:13-68
+136            android:exported="false" >
+136-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:60:13-37
+137            <meta-data
+137-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:62:13-64:52
+138                android:name="com.razorpay.RazorpayInitializer"
+138-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:63:17-64
+139                android:value="androidx.startup" />
+139-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:64:17-49
+140            <meta-data
+140-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:65:13-67:52
+141                android:name="com.razorpay.CoreInitializer"
+141-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:66:17-60
+142                android:value="androidx.startup" />
+142-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:67:17-49
+143            <meta-data
+143-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a4def40035927cb6d856303427b50933\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:29:13-31:52
+144                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+144-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a4def40035927cb6d856303427b50933\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:30:17-78
+145                android:value="androidx.startup" />
+145-->[androidx.lifecycle:lifecycle-process:2.7.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a4def40035927cb6d856303427b50933\transformed\jetified-lifecycle-process-2.7.0\AndroidManifest.xml:31:17-49
+146            <meta-data
+146-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+147                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+148                android:value="androidx.startup" />
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+149        </provider>
+150
+151        <activity
+151-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:70:9-73:75
+152            android:name="com.razorpay.MagicXActivity"
+152-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:71:13-55
+153            android:exported="false"
+153-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:72:13-37
+154            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+154-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:73:13-72
+155        <activity
+155-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:23:9-27:75
+156            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+156-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:24:13-93
+157            android:excludeFromRecents="true"
+157-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:25:13-46
+158            android:exported="false"
+158-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:26:13-37
+159            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+159-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:27:13-72
+160        <!--
+161            Service handling Google Sign-In user revocation. For apps that do not integrate with
+162            Google Sign-In, this service will never be started.
+163        -->
+164        <service
+164-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:33:9-37:51
+165            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+165-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:34:13-89
+166            android:exported="true"
+166-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:35:13-36
+167            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+167-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:36:13-107
+168            android:visibleToInstantApps="true" /> <!-- Needs to be explicitly declared on P+ -->
+168-->[com.google.android.gms:play-services-auth:21.1.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\8f19977959ebb281ea3d7ecb6fbe4d0f\transformed\jetified-play-services-auth-21.1.0\AndroidManifest.xml:37:13-48
+169        <uses-library
+169-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:33:9-35:40
+170            android:name="org.apache.http.legacy"
+170-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:34:13-50
+171            android:required="false" />
+171-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\c881c6d66e190df7a3241fba85a43cf9\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:35:13-37
+172
+173        <activity
+173-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a456ad57e908d23527b31f7d5597ad4d\transformed\jetified-play-services-base-18.3.0\AndroidManifest.xml:20:9-22:45
+174            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+174-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a456ad57e908d23527b31f7d5597ad4d\transformed\jetified-play-services-base-18.3.0\AndroidManifest.xml:20:19-85
+175            android:exported="false"
+175-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a456ad57e908d23527b31f7d5597ad4d\transformed\jetified-play-services-base-18.3.0\AndroidManifest.xml:22:19-43
+176            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+176-->[com.google.android.gms:play-services-base:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\a456ad57e908d23527b31f7d5597ad4d\transformed\jetified-play-services-base-18.3.0\AndroidManifest.xml:21:19-78
+177
+178        <meta-data
+178-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\5347ce2b6c24056ce3aca4d7aaf30c2e\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:21:9-23:69
+179            android:name="com.google.android.gms.version"
+179-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\5347ce2b6c24056ce3aca4d7aaf30c2e\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:22:13-58
+180            android:value="@integer/google_play_services_version" />
+180-->[com.google.android.gms:play-services-basement:18.3.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\5347ce2b6c24056ce3aca4d7aaf30c2e\transformed\jetified-play-services-basement-18.3.0\AndroidManifest.xml:23:13-66
+181
+182        <uses-library
+182-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:23:9-25:40
+183            android:name="androidx.window.extensions"
+183-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:24:13-54
+184            android:required="false" />
+184-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:25:13-37
+185        <uses-library
+185-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:26:9-28:40
+186            android:name="androidx.window.sidecar"
+186-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:27:13-51
+187            android:required="false" />
+187-->[androidx.window:window:1.2.0] C:\Users\shrutika yadav\.gradle\caches\transforms-3\b61292485483c7499e83c4f5c6f9bd1a\transformed\jetified-window-1.2.0\AndroidManifest.xml:28:13-37
+188
+189        <receiver
+189-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+190            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+190-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+191            android:directBootAware="false"
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+192            android:enabled="true"
+192-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+193            android:exported="true"
+193-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+194            android:permission="android.permission.DUMP" >
+194-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+195            <intent-filter>
+195-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+196                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+196-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+196-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+197            </intent-filter>
+198            <intent-filter>
+198-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+199                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+199-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+199-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+200            </intent-filter>
+201            <intent-filter>
+201-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+202                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+202-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+202-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+203            </intent-filter>
+204            <intent-filter>
+204-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+205                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+205-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+205-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\shrutika yadav\.gradle\caches\transforms-3\ec9fdb662d7f540d2603f340c7b5ab14\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+206            </intent-filter>
+207        </receiver>
+208
+209        <activity
+209-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:25:9-39:20
+210            android:name="com.razorpay.DeeplinkActivity"
+210-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:26:13-57
+211            android:exported="true"
+211-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:27:13-36
+212            android:theme="@style/CheckoutTheme" >
+212-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:28:13-49
+213            <intent-filter>
+213-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:29:13-38:29
+214                <action android:name="android.intent.action.VIEW" />
+214-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:13-65
+214-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:17:21-62
+215
+216                <category android:name="android.intent.category.DEFAULT" />
+216-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:32:17-76
+216-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:32:27-73
+217                <category android:name="android.intent.category.BROWSABLE" />
+217-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:26:13-74
+217-->[com.razorpay:standard-core:1.7.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\727738105ea09a3f774856d1269459cc\transformed\jetified-standard-core-1.7.18\AndroidManifest.xml:26:23-71
+218
+219                <data
+219-->C:\Users\shrutika yadav\StudioProjects\new_expense\android\app\src\main\AndroidManifest.xml:43:13-50
+220                    android:host="com.example.new_expense"
+221                    android:scheme="razorpay" />
+222            </intent-filter>
+223        </activity>
+224
+225        <receiver
+225-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:41:9-43:40
+226            android:name="com.razorpay.UpiChooserSelectionReceiver"
+226-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:42:13-68
+227            android:exported="false" />
+227-->[com.razorpay:core:1.0.18] C:\Users\shrutika yadav\.gradle\caches\transforms-3\d154b0619c2b4fe06c8a4dd98cafd9f7\transformed\jetified-core-1.0.18\AndroidManifest.xml:43:13-37
+228    </application>
+229
+230</manifest>

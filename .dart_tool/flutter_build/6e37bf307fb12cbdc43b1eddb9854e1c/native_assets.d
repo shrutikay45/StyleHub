@@ -1,0 +1,1 @@
+ C:\\Users\\shrutika\ yadav\\StudioProjects\\new_expense\\.dart_tool\\flutter_build\\6e37bf307fb12cbdc43b1eddb9854e1c\\native_assets.yaml: 

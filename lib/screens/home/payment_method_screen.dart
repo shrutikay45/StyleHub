@@ -5,14 +5,21 @@ import 'package:new_expense/data/order_data.dart';
 import 'package:new_expense/models/order_model.dart';
 import 'package:new_expense/screens/home/main_bottom_nav.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
+import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/models/cart_item.dart';
+import 'package:new_expense/models/order_model.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   final double totalAmount;
+  final List<CartItem> items;
+  // final String customerName;
+  // final String deliveryAddress;
 
   const PaymentMethodScreen({
     super.key,
     required this.totalAmount,
+    required this.items,
   });
 
   @override
@@ -237,7 +244,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               onPressed: () {
                 Navigator.pop(context);
 
+                _createOrder('Cash on Delivery');
+
                 _createOrderAndClearCart();
+
                 _showOrderSuccess(
                   title: 'Order Placed',
                   message:
@@ -262,6 +272,53 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
 
 
+  void _showRazorpaySetupMessage() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: const Text(
+            'Razorpay setup',
+            style: TextStyle(
+              color: AppColors.dark,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: const Text(
+            'The payment screen is ready. '
+                'Add your Razorpay test key to start testing online payments.',
+            style: TextStyle(
+              color: AppColors.grey,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _createOrder('UPI');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Okay'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   // ------------------------------------------------------------
   // ORDER SUCCESS
   // ------------------------------------------------------------
@@ -280,6 +337,23 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       ),
     );
   }
+
+  void _createOrder(String paymentMethod) {
+    final order = OrderModel(
+      orderId: 'ORD${DateTime.now().millisecondsSinceEpoch}',
+      orderDate: DateTime.now(),
+      items: List<CartItem>.from(widget.items),
+      totalAmount: widget.totalAmount,
+      customerName: 'Customer',
+      deliveryAddress: 'Delivery address',
+      paymentMethod: paymentMethod,
+      status: 'Order Confirmed',
+      expectedDelivery: 'Expected delivery within 3-5 days',
+    );
+
+    OrderData.addOrder(order);
+  }
+
 
   // ------------------------------------------------------------
   // SCREEN

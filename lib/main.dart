@@ -1,12 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/screens/auth/login_screen.dart';
-import 'package:new_expense/screens/auth/phone_login_screen.dart';
+import 'package:new_expense/screens/home/main_bottom_nav.dart';
+import 'package:new_expense/services/auth_service.dart';
 
-void main(){
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AuthService.initSession();
+  runApp(const MyApp());
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,6 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'StyleHub',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         colorScheme: ColorScheme.fromSeed(
@@ -29,7 +33,7 @@ class MyApp extends StatelessWidget {
             color: AppColors.dark,
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
+        inputDecorationTheme: const InputDecorationTheme(
           filled: true,
           fillColor: AppColors.softBackground,
           border: OutlineInputBorder(
@@ -39,11 +43,10 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide.none,
           ),
         ),
-
-
       ),
-      home: const LoginScreen(),
-
+      home: AuthService.isLoggedIn
+          ? const MainBottomNavigation()
+          : const LoginScreen(),
     );
   }
 }

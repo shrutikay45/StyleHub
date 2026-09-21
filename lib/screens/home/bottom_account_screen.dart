@@ -1,12 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/widgets/address_dialog.dart';
-import 'package:new_expense/data/user_data.dart';
-import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/screens/order_screen.dart';
-import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
+import '../../core/constants/app_colors.dart';
+import '../../data/user_data.dart';
+import '../../services/auth_service.dart';
+import '../../widgets/address_dialog.dart';
+import '../auth/login_screen.dart';
+import '../order_screen.dart';
+import '../wishlist/wishlist_screen.dart';
 
 class BottomAccountScreen extends StatelessWidget {
   const BottomAccountScreen({super.key});
+
+  void _handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Log Out',
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        content: const Text(
+          'Are you sure you want to log out of StyleHub?',
+          style: TextStyle(fontSize: 14, color: AppColors.dark),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () async {
+              Navigator.pop(dialogCtx);
+              await AuthService.logout();
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            child: const Text('Log Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +59,8 @@ class BottomAccountScreen extends StatelessWidget {
         backgroundColor: AppColors.primary,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: const Text(
           'My Profile',
@@ -37,7 +75,7 @@ class BottomAccountScreen extends StatelessWidget {
         child: Column(
           children: [
             // -----------------------------------------------------------
-            // HEADER PROFILE SECTION (Flipkart Style)
+            // HEADER PROFILE SECTION (Dynamic User Data)
             // -----------------------------------------------------------
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -51,8 +89,8 @@ class BottomAccountScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    height: 70,
-                    width: 70,
+                    height: 68,
+                    width: 68,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
@@ -76,29 +114,46 @@ class BottomAccountScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          UserData.name,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        ValueListenableBuilder<String>(
+                          valueListenable: UserData.nameNotifier,
+                          builder: (context, name, _) {
+                            return Text(
+                              name.isNotEmpty ? name : 'User',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          UserData.email,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
+                        ValueListenableBuilder<String>(
+                          valueListenable: UserData.emailNotifier,
+                          builder: (context, email, _) {
+                            if (email.isEmpty) return const SizedBox.shrink();
+                            return Text(
+                              email,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          UserData.phone,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withOpacity(0.9),
-                          ),
+                        ValueListenableBuilder<String>(
+                          valueListenable: UserData.phoneNotifier,
+                          builder: (context, phone, _) {
+                            if (phone.isEmpty) return const SizedBox.shrink();
+                            return Text(
+                              phone,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -121,7 +176,10 @@ class BottomAccountScreen extends StatelessWidget {
                   title: 'My Orders',
                   subtitle: 'Track, return, or buy things again',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderScreen(),));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const OrderScreen()),
+                    );
                   },
                 ),
                 const Divider(height: 1, indent: 60),
@@ -130,7 +188,10 @@ class BottomAccountScreen extends StatelessWidget {
                   title: 'My Wishlist',
                   subtitle: 'Your most loved styles',
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const WishlistScreen(),));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const WishlistScreen()),
+                    );
                   },
                 ),
               ],
@@ -149,7 +210,7 @@ class BottomAccountScreen extends StatelessWidget {
                     _ProfileMenuListItem(
                       icon: Icons.person_outline,
                       title: 'Edit Profile',
-                      subtitle: 'Change your name, phone, etc.',
+                      subtitle: 'Change your delivery details',
                       onTap: () {
                         showAddressDialog(context);
                       },
@@ -160,13 +221,12 @@ class BottomAccountScreen extends StatelessWidget {
                       title: 'Saved Addresses',
                       subtitle: loc,
                       onTap: () {
-                        // Show dialog to change location
                         showAddressDialog(context);
                       },
                     ),
                   ],
                 );
-              }
+              },
             ),
 
             // -----------------------------------------------------------
@@ -182,7 +242,7 @@ class BottomAccountScreen extends StatelessWidget {
                   subtitle: 'Help regarding your recent purchases',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Help Center is currently unavailable.')),
+                      const SnackBar(content: Text('Help Center is currently online.')),
                     );
                   },
                 ),
@@ -193,7 +253,7 @@ class BottomAccountScreen extends StatelessWidget {
                   subtitle: 'Terms of Use, Privacy Policy',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Policies documentation will be available soon.')),
+                      const SnackBar(content: Text('Terms & Privacy Policy v1.0')),
                     );
                   },
                 ),
@@ -209,32 +269,31 @@ class BottomAccountScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SizedBox(
                 width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Logout action (dummy for now)
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
+                height: 48,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.logout, size: 18, color: Colors.red),
+                  onPressed: () => _handleLogout(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: AppColors.primary,
+                    foregroundColor: Colors.red.shade700,
                     elevation: 1,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: AppColors.primary, width: 1),
+                      side: BorderSide(color: Colors.red.shade200, width: 1),
                     ),
                   ),
-                  child: const Text(
+                  label: Text(
                     'Log Out',
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.red.shade700,
                     ),
                   ),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 30),
           ],
         ),
@@ -242,7 +301,6 @@ class BottomAccountScreen extends StatelessWidget {
     );
   }
 
-  // Helper method to build grouped cards
   Widget _buildMenuGroup(BuildContext context, {required String title, required List<Widget> children}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -282,9 +340,6 @@ class BottomAccountScreen extends StatelessWidget {
   }
 }
 
-// =======================================================================
-// PROFILE LIST ITEM
-// =======================================================================
 class _ProfileMenuListItem extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -327,12 +382,12 @@ class _ProfileMenuListItem extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: AppColors.dark,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(

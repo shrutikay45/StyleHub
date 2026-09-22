@@ -27,13 +27,56 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   late String selectedSize;
   late String selectedColor;
   int quantity = 1;
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     isWishlisted = WishlistData.contains(widget.product);
     selectedSize = widget.product.sizes.isNotEmpty ? widget.product.sizes.first : 'M';
     selectedColor = widget.product.colors.isNotEmpty ? widget.product.colors.first : 'Black';
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onColorSelected(String color) {
+    if (selectedColor == color) return;
+    setState(() {
+      selectedColor = color;
+      currentImageIndex = 0;
+    });
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  Color _getColorValue(String colorName) {
+    final c = colorName.toLowerCase().trim();
+    if (c.contains('black') || c.contains('charcoal')) return const Color(0xFF1E232A);
+    if (c.contains('white') || c.contains('cream') || c.contains('ivory')) return const Color(0xFFF1F5F9);
+    if (c.contains('light blue') || c.contains('ice')) return const Color(0xFF93C5FD);
+    if (c.contains('dark blue') || c.contains('navy') || c.contains('indigo')) return const Color(0xFF1E3A8A);
+    if (c.contains('blue') || c.contains('washed') || c.contains('vintage')) return const Color(0xFF3B82F6);
+    if (c.contains('red') || c.contains('crimson') || c.contains('ruby')) return const Color(0xFFE11D48);
+    if (c.contains('wine') || c.contains('maroon') || c.contains('burgundy')) return const Color(0xFF881337);
+    if (c.contains('green') || c.contains('olive') || c.contains('sage') || c.contains('emerald') || c.contains('mint')) return const Color(0xFF059669);
+    if (c.contains('pink') || c.contains('blush') || c.contains('coral') || c.contains('rose') || c.contains('peach')) return const Color(0xFFF43F5E);
+    if (c.contains('yellow') || c.contains('mustard') || c.contains('gold') || c.contains('sunflower')) return const Color(0xFFF59E0B);
+    if (c.contains('purple') || c.contains('lavender') || c.contains('lilac')) return const Color(0xFF8B5CF6);
+    if (c.contains('brown') || c.contains('tan') || c.contains('caramel') || c.contains('mocha')) return const Color(0xFF92400E);
+    if (c.contains('grey') || c.contains('silver') || c.contains('pewter')) return const Color(0xFF6B7280);
+    if (c.contains('beige') || c.contains('nude') || c.contains('sand')) return const Color(0xFFD6C7B2);
+    if (c.contains('teal') || c.contains('turquoise')) return const Color(0xFF0D9488);
+    return AppColors.primary;
   }
 
   void _addToCart() {
@@ -61,7 +104,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Added "${widget.product.name}" ($selectedSize) to bag!',
+                'Added "${widget.product.name}" ($selectedSize • $selectedColor) to bag!',
                 style: const TextStyle(fontWeight: FontWeight.w600),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -103,9 +146,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.product.images.isNotEmpty
-        ? widget.product.images
-        : [widget.product.image];
+    final images = widget.product.getImagesForColor(selectedColor);
 
     final discountPercent = (widget.product.oldPrice > widget.product.price && widget.product.oldPrice > 0)
         ? (((widget.product.oldPrice - widget.product.price) / widget.product.oldPrice) * 100).round()
@@ -121,12 +162,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.product.category,
+          widget.product.name,
           style: const TextStyle(
             color: AppColors.dark,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         centerTitle: true,
         actions: [
@@ -168,6 +211,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Stack(
                 children: [
                   PageView.builder(
+                    controller: _pageController,
                     itemCount: images.length,
                     onPageChanged: (index) {
                       setState(() {
@@ -214,7 +258,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.65),
+                        color: Colors.black.withValues(alpha: 0.65),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -224,6 +268,49 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
+                      ),
+                    ),
+                  ),
+
+                  // Active Color pill indicator on top-right
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: _getColorValue(selectedColor),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black26, width: 0.5),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            selectedColor,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.dark,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -246,7 +333,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               borderRadius: BorderRadius.circular(4),
                               color: currentImageIndex == index
                                   ? AppColors.primary
-                                  : Colors.grey.withOpacity(0.4),
+                                  : Colors.grey.withValues(alpha: 0.4),
                             ),
                           ),
                         ),
@@ -281,7 +368,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F8A5F).withOpacity(0.12),
+                          color: const Color(0xFF0F8A5F).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -392,7 +479,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.25),
+                                      color: AppColors.primary.withValues(alpha: 0.25),
                                       blurRadius: 6,
                                       offset: const Offset(0, 3),
                                     )
@@ -415,42 +502,81 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   const SizedBox(height: 22),
 
                   // 4. COLOR SELECTOR
-                  const Text(
-                    'Select Color',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.dark,
-                    ),
+                  Row(
+                    children: [
+                      const Text(
+                        'Select Color',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.dark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        ': $selectedColor',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 10,
+                    runSpacing: 10,
                     children: widget.product.colors.map((color) {
                       final isSelected = selectedColor == color;
+                      final colorVal = _getColorValue(color);
                       return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedColor = color;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        onTap: () => _onColorSelected(color),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                           decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : Colors.white,
+                            borderRadius: BorderRadius.circular(24),
                             border: Border.all(
                               color: isSelected ? AppColors.primary : const Color(0xFFDDDDDD),
-                              width: 1.5,
+                              width: isSelected ? 2.0 : 1.2,
                             ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(alpha: 0.15),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ]
+                                : null,
                           ),
-                          child: Text(
-                            color,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              color: isSelected ? AppColors.primary : AppColors.dark,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 14,
+                                height: 14,
+                                decoration: BoxDecoration(
+                                  color: colorVal,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.black26,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                color,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                  color: isSelected ? AppColors.primary : AppColors.dark,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -513,7 +639,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, -4),
             ),

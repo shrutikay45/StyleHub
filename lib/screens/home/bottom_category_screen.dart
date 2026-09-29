@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/screens/home/bottom_cart_screen.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/widgets/product_card.dart';
+import 'package:new_expense/widgets/product_search_delegate.dart';
 import 'package:new_expense/widgets/shimmer_loading.dart';
 import '../../core/constants/app_colors.dart';
 
@@ -50,14 +52,26 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ProductSearchDelegate(),
+              );
+            },
             icon: const Icon(
               Icons.search,
               color: AppColors.dark,
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BottomCartScreen(),
+                ),
+              );
+            },
             icon: const Icon(
               Icons.shopping_bag_outlined,
               color: AppColors.dark,

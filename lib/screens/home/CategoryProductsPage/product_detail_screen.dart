@@ -35,7 +35,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _pageController = PageController();
     isWishlisted = WishlistData.contains(widget.product);
     selectedSize = widget.product.sizes.isNotEmpty ? widget.product.sizes.first : 'M';
-    selectedColor = widget.product.colors.isNotEmpty ? widget.product.colors.first : 'Black';
+    selectedColor = widget.product.colors.isNotEmpty ? widget.product.colors.first : '';
   }
 
   @override
@@ -96,6 +96,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       );
     }
 
+    final variantParts = <String>[];
+    if (selectedSize.isNotEmpty) variantParts.add(selectedSize);
+    if (selectedColor.isNotEmpty) variantParts.add(selectedColor);
+    final variantStr = variantParts.isNotEmpty ? ' (${variantParts.join(' • ')})' : '';
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -104,7 +109,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Added "${widget.product.name}" ($selectedSize • $selectedColor) to bag!',
+                'Added "${widget.product.name}"$variantStr to bag!',
                 style: const TextStyle(fontWeight: FontWeight.w600),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -272,48 +277,49 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                   ),
 
-                  // Active Color pill indicator on top-right
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: _getColorValue(selectedColor),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black26, width: 0.5),
+                  // Active Color pill indicator on top-right (only if variants exist)
+                  if (widget.product.colors.length > 1 && selectedColor.isNotEmpty)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.1),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            selectedColor,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.dark,
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: _getColorValue(selectedColor),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.black26, width: 0.5),
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Text(
+                              selectedColor,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.dark,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
                   // Dot Indicators
                   if (images.length > 1)
@@ -499,89 +505,92 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     }).toList(),
                   ),
 
-                  const SizedBox(height: 22),
-
-                  // 4. COLOR SELECTOR
-                  Row(
-                    children: [
-                      const Text(
-                        'Select Color',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.dark,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        ': $selectedColor',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: widget.product.colors.map((color) {
-                      final isSelected = selectedColor == color;
-                      final colorVal = _getColorValue(color);
-                      return GestureDetector(
-                        onTap: () => _onColorSelected(color),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: isSelected ? AppColors.primary : const Color(0xFFDDDDDD),
-                              width: isSelected ? 2.0 : 1.2,
-                            ),
-                            boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: AppColors.primary.withValues(alpha: 0.15),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]
-                                : null,
+                  // 4. COLOR SELECTOR (Only when item has multiple color variants)
+                  if (widget.product.colors.length > 1) ...[
+                    const SizedBox(height: 22),
+                    Row(
+                      children: [
+                        const Text(
+                          'Select Color',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.dark,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 14,
-                                height: 14,
-                                decoration: BoxDecoration(
-                                  color: colorVal,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.black26,
-                                    width: 1,
+                        ),
+                        if (selectedColor.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            ': $selectedColor',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: widget.product.colors.map((color) {
+                        final isSelected = selectedColor == color;
+                        final colorVal = _getColorValue(color);
+                        return GestureDetector(
+                          onTap: () => _onColorSelected(color),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.primary.withValues(alpha: 0.08) : Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: isSelected ? AppColors.primary : const Color(0xFFDDDDDD),
+                                width: isSelected ? 2.0 : 1.2,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.primary.withValues(alpha: 0.15),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      )
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    color: colorVal,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.black26,
+                                      width: 1,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                color,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                  color: isSelected ? AppColors.primary : AppColors.dark,
+                                const SizedBox(width: 8),
+                                Text(
+                                  color,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                    color: isSelected ? AppColors.primary : AppColors.dark,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
 
                   const Divider(height: 32, thickness: 1, color: Color(0xFFEEEEEE)),
 

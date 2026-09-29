@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/screens/home/CategoryProductsPage/category_products_screen.dart';
+import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/widgets/shimmer_loading.dart';
 
@@ -99,8 +99,8 @@ class FeaturedProducts extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryProductsScreen(
-                                categoryName: product.category,
+                              builder: (context) => ProductDetailsScreen(
+                                product: product,
                               ),
                             ),
                           );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/screens/home/payment_method_screen.dart';
+import 'package:new_expense/widgets/address_dialog.dart';
 
 import '../../data/cart_data.dart';
 import '../../models/cart_item.dart';
@@ -164,43 +165,51 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     // ADDRESS
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            customerName,
+                            customerName.trim().isNotEmpty
+                                ? customerName.trim()
+                                : (deliveryAddress.trim().isNotEmpty ? 'Delivery Address' : 'No Address Added'),
                             style: const TextStyle(
                               color: AppColors.dark,
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-
                           const SizedBox(height: 5),
-
                           Text(
-                            deliveryAddress,
-                            style: const TextStyle(
-                              color: AppColors.grey,
+                            deliveryAddress.trim().isNotEmpty
+                                ? deliveryAddress.trim()
+                                : 'Tap to add shipping and delivery address',
+                            style: TextStyle(
+                              color: deliveryAddress.trim().isNotEmpty ? AppColors.grey : AppColors.primary,
                               fontSize: 13,
+                              fontWeight: deliveryAddress.trim().isNotEmpty ? FontWeight.normal : FontWeight.w600,
                               height: 1.4,
                             ),
                           ),
                         ],
                       ),
                     ),
-
                     const SizedBox(width: 8),
 
-                    // CHANGE BUTTON
+                    // CHANGE / ADD BUTTON
                     GestureDetector(
                       onTap: _changeAddress,
-                      child: const Text(
-                        'Change',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryLight,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          deliveryAddress.trim().isNotEmpty ? 'Change' : '+ Add',
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -813,147 +822,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // CHANGE ADDRESS
   // ===========================================================================
 
-  void _changeAddress() {
-    final nameController = TextEditingController(
-      text: customerName,
-    );
-
-    final addressController = TextEditingController(
-      text: deliveryAddress,
-    );
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.background,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(22),
-        ),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom:
-            MediaQuery.of(context).viewInsets.bottom +
-                20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Delivery Address',
-                style: TextStyle(
-                  color: AppColors.dark,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  labelStyle: const TextStyle(
-                    color: AppColors.grey,
-                  ),
-                  focusedBorder:
-                  const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  enabledBorder:
-                  OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.border,
-                    ),
-                    borderRadius:
-                    BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              TextField(
-                controller: addressController,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  labelStyle: const TextStyle(
-                    color: AppColors.grey,
-                  ),
-                  focusedBorder:
-                  const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  enabledBorder:
-                  OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.border,
-                    ),
-                    borderRadius:
-                    BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      customerName =
-                          nameController.text.trim();
-
-                      deliveryAddress =
-                          addressController.text.trim();
-                          
-                      UserData.name = customerName;
-                      UserData.location = deliveryAddress;
-                    });
-
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(11),
-                    ),
-                  ),
-                  child: const Text(
-                    'Save Address',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
+  void _changeAddress() async {
+    await showAddressDialog(context);
+    if (mounted) {
+      setState(() {
+        customerName = UserData.name;
+        deliveryAddress = UserData.location;
+      });
+    }
   }
 
   // ===========================================================================

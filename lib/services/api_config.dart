@@ -14,9 +14,12 @@ class ApiConfig {
   static const String categories = '$baseUrl/api/categories';
   static const String banners = '$baseUrl/api/banners';
 
-  // Cart & Orders
+  // Cart, Orders, Coupons, Notifications, Addresses
   static const String cart = '$baseUrl/api/cart';
   static const String orders = '$baseUrl/api/orders';
+  static const String coupons = '$baseUrl/api/coupons';
+  static const String notifications = '$baseUrl/api/notifications';
+  static const String addresses = '$baseUrl/api/addresses';
 
   // Standard Headers
   static Map<String, String> headers({String? token}) {

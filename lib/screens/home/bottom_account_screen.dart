@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/data/order_data.dart';
 import 'package:new_expense/data/user_data.dart';
@@ -9,6 +11,7 @@ import 'package:new_expense/screens/help_center_screen.dart';
 import 'package:new_expense/screens/home/notification_screen.dart';
 import 'package:new_expense/screens/order_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
+import 'package:new_expense/services/api_config.dart';
 import 'package:new_expense/services/auth_service.dart';
 import 'package:new_expense/widgets/address_dialog.dart';
 
@@ -49,6 +52,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
 
     if (shouldLogout == true) {
       await AuthService.logout();
+      UserData.clear();
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -147,13 +151,23 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
     );
   }
 
-  void _showCouponsSheet() {
-    final coupons = [
-      {'code': 'WELCOME50', 'desc': 'Get 50% off on your first order', 'min': 'Min order ₹999'},
-      {'code': 'FLAT100', 'desc': 'Flat ₹100 cashback on prepaid orders', 'min': 'Min order ₹499'},
-      {'code': 'FESTIVE20', 'desc': '20% off on Ethnic & Party Wear collections', 'min': 'No min order'},
-    ];
+  Future<List<Map<String, dynamic>>> _fetchLiveCoupons() async {
+    try {
+      final uri = Uri.parse(ApiConfig.coupons);
+      final response = await http.get(uri, headers: ApiConfig.headers()).timeout(const Duration(seconds: 10));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonBody = jsonDecode(response.body);
+        if (jsonBody['success'] == true && jsonBody['data'] is List) {
+          return List<Map<String, dynamic>>.from(jsonBody['data']);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching live coupons: $e');
+    }
+    return [];
+  }
 
+  void _showCouponsSheet() {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -181,64 +195,114 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
               ),
               const Divider(),
               const SizedBox(height: 8),
-              ...coupons.map((c) => Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.primary),
-                          ),
-                          child: Text(
-                            c['code']!,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
-                              fontSize: 13,
-                              letterSpacing: 1.1,
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: _fetchLiveCoupons(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                    );
+                  }
+
+                  final coupons = snapshot.data ?? [];
+                  if (coupons.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(Icons.local_offer_outlined, size: 40, color: Colors.grey.shade400),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'No Active Coupons Available',
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.dark),
                             ),
-                          ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Check back soon for exclusive discounts and festive deals!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 12, color: AppColors.grey),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                c['desc']!,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark),
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: coupons.map((c) {
+                      final code = c['code']?.toString() ?? 'PROMO';
+                      final desc = c['description']?.toString() ?? '';
+                      final isPercent = (c['discountType']?.toString().toUpperCase() == 'PERCENTAGE');
+                      final discountVal = c['discountValue']?.toString() ?? '0';
+                      final discountTag = isPercent ? '$discountVal% OFF' : '₹$discountVal OFF';
+                      final minOrder = c['minOrderValue'] != null && (c['minOrderValue'] as num) > 0
+                          ? 'Min order ₹${c['minOrderValue']}'
+                          : 'No minimum order value';
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.primary),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                c['min']!,
-                                style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                              child: Text(
+                                code,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.primary,
+                                  fontSize: 13,
+                                  letterSpacing: 1.1,
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    desc.isNotEmpty ? desc : discountTag,
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    minOrder,
+                                    style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy, size: 18, color: AppColors.primary),
+                              tooltip: 'Copy Code',
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: code));
+                                Navigator.pop(ctx);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Coupon code $code copied!')),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.copy, size: 18, color: AppColors.primary),
-                          tooltip: 'Copy Code',
-                          onPressed: () {
-                            Clipboard.setData(ClipboardData(text: c['code']!));
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Coupon code ${c['code']} copied!')),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  )),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -298,12 +362,11 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = AuthService.isLoggedIn;
-    final userName = isLoggedIn && UserData.name.isNotEmpty && UserData.name != 'Guest User'
-        ? UserData.name
-        : 'StyleHub Member';
-    final userEmail = isLoggedIn && UserData.email.isNotEmpty
-        ? UserData.email
-        : (UserData.phone.isNotEmpty ? UserData.phone : 'member@stylehub.com');
+    final hasName = UserData.name.trim().isNotEmpty;
+    final userName = hasName ? UserData.name.trim() : '';
+    final userSubtitle = UserData.email.trim().isNotEmpty
+        ? UserData.email.trim()
+        : (UserData.phone.trim().isNotEmpty ? UserData.phone.trim() : '');
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -332,7 +395,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
           children: [
             const SizedBox(height: 10),
 
-            // 1. USER PROFILE CARD (INITIAL AVATAR - NO PHOTO UPLOAD)
+            // 1. USER PROFILE CARD (REAL DATA ONLY - NO DUMMY VALUES)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(18),
@@ -347,92 +410,175 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      // Gradient Initial Avatar
-                      Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, Color(0xFFF06292)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
+              child: isLoggedIn
+                  ? Column(
+                      children: [
+                        Row(
+                          children: [
+                            // Gradient Initial Avatar
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [AppColors.primary, Color(0xFFF06292)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  hasName ? userName[0].toUpperCase() : 'U',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          hasName ? userName : 'Account User',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.dark,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      GestureDetector(
+                                        onTap: _showEditProfileDialog,
+                                        child: const Icon(
+                                          Icons.edit_note,
+                                          size: 20,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (userSubtitle.isNotEmpty) ...[
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      userSubtitle,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.grey,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        child: Center(
-                          child: Text(
-                            userName.isNotEmpty ? userName[0].toUpperCase() : 'S',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w800,
+                        const SizedBox(height: 14),
+                        const Divider(height: 1),
+                        const SizedBox(height: 12),
+                        InkWell(
+                          onTap: () async {
+                            await showAddressDialog(context);
+                            if (mounted) setState(() {});
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF0F5),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                            child: Row(
                               children: [
-                                Flexible(
+                                const Icon(Icons.location_on, color: AppColors.primary, size: 16),
+                                const SizedBox(width: 8),
+                                Expanded(
                                   child: Text(
-                                    userName,
+                                    UserData.location.trim().isNotEmpty
+                                        ? 'Delivery: ${UserData.location.trim()}'
+                                        : 'Add delivery address',
                                     style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.dark,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                if (isLoggedIn) ...[
-                                  const SizedBox(width: 6),
-                                  GestureDetector(
-                                    onTap: _showEditProfileDialog,
-                                    child: const Icon(
-                                      Icons.edit_note,
-                                      size: 18,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ],
+                                Icon(
+                                  UserData.location.trim().isNotEmpty ? Icons.edit_outlined : Icons.add_circle_outline,
+                                  color: AppColors.primary,
+                                  size: 15,
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 3),
-                            Text(
-                              userEmail,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.grey,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                      if (!isLoggedIn)
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.person_outline, color: AppColors.primary, size: 28),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Welcome to StyleHub',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.dark,
+                                ),
+                              ),
+                              SizedBox(height: 3),
+                              Text(
+                                'Sign in to access orders & wishlist',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const LoginScreen()),
-                            );
+                            ).then((_) {
+                              if (mounted) setState(() {});
+                            });
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
@@ -445,51 +591,13 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  const Divider(height: 1),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () async {
-                      await showAddressDialog(context);
-                      if (mounted) setState(() {});
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF0F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.location_on, color: AppColors.primary, size: 16),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Delivery: ${UserData.location}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const Icon(Icons.edit_outlined, color: AppColors.primary, size: 14),
-                        ],
-                      ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
 
             const SizedBox(height: 16),
 
-            // 2. QUICK SHORTCUTS (2x2 GRID: ORDERS, WISHLIST, NOTIFICATIONS, OFFERS)
+            // 2. QUICK SHORTCUTS (2x2 GRID: REAL LIVE ACTIONS)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -500,7 +608,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         child: _QuickCard(
                           icon: Icons.inventory_2_outlined,
                           title: 'My Orders',
-                          countText: '${OrderData.orders.length} Placed',
+                          countText: '${OrderData.orders.length} ${OrderData.orders.length == 1 ? "Order" : "Orders"}',
                           color: const Color(0xFFF3E8FF),
                           iconColor: const Color(0xFF7E22CE),
                           onTap: () {
@@ -518,7 +626,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         child: _QuickCard(
                           icon: Icons.favorite_outline,
                           title: 'Wishlist',
-                          countText: '${WishlistData.items.length} Saved',
+                          countText: '${WishlistData.items.length} ${WishlistData.items.length == 1 ? "Item" : "Items"}',
                           color: const Color(0xFFFFE4E6),
                           iconColor: const Color(0xFFE11D48),
                           onTap: () {
@@ -540,7 +648,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         child: _QuickCard(
                           icon: Icons.notifications_none_outlined,
                           title: 'Notifications',
-                          countText: '4 Updates',
+                          countText: 'Inbox & Alerts',
                           color: const Color(0xFFE0F2FE),
                           iconColor: const Color(0xFF0284C7),
                           onTap: () {
@@ -556,7 +664,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         child: _QuickCard(
                           icon: Icons.local_offer_outlined,
                           title: 'Coupons',
-                          countText: '3 Active Deals',
+                          countText: 'Live Offers',
                           color: const Color(0xFFDCFCE7),
                           iconColor: const Color(0xFF16A34A),
                           onTap: _showCouponsSheet,
@@ -589,7 +697,9 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                   _MenuTile(
                     icon: Icons.location_on_outlined,
                     title: 'Saved Delivery Addresses',
-                    subtitle: 'Manage your shipping addresses',
+                    subtitle: UserData.location.trim().isNotEmpty
+                        ? UserData.location.trim()
+                        : 'Add and manage shipping addresses',
                     onTap: () async {
                       await showAddressDialog(context);
                       if (mounted) setState(() {});
@@ -650,10 +760,10 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                   _MenuTile(
                     icon: Icons.info_outline,
                     title: 'About StyleHub',
-                    subtitle: 'Version 2.4.0 (Live Backend Edition)',
+                    subtitle: 'Version 2.4.0',
                     onTap: () => _showPolicySheet(
                       'About StyleHub',
-                      'StyleHub is your premier online fashion destination featuring over 84+ curated outfits across 13 collections with instant delivery and secure checkout.',
+                      'StyleHub is your premier online fashion destination featuring curated outfits across multiple collections with instant delivery and secure checkout.',
                     ),
                   ),
                 ],
@@ -662,7 +772,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
 
             const SizedBox(height: 24),
 
-            // 5. LOGOUT BUTTON
+            // 5. LOGOUT BUTTON (SHOWN ONLY WHEN LOGGED IN)
             if (isLoggedIn)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

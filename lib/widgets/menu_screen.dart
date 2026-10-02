@@ -5,6 +5,7 @@ import 'package:new_expense/screens/home/bottom_cart_screen.dart';
 import 'package:new_expense/screens/home/bottom_category_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
 import 'package:new_expense/screens/order_screen.dart';
+import 'package:new_expense/screens/help_center_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -136,6 +137,12 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Help & Support'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpCenterScreen(),
+                    ),
+                  );
                 },
               ),
           

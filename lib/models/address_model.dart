@@ -60,7 +60,7 @@ class AddressItem {
       city: json['city'] ?? '',
       state: json['state'] ?? 'Delhi',
       pincode: json['zipCode'] ?? '',
-      isDefault: json['isDefault'] == true,
+      isDefault: json['isDefault'] == true || json['default'] == true,
     );
   }
 }

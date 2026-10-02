@@ -60,6 +60,95 @@ class Product {
       imgList = [json['image'].toString().trim()];
     }
 
+    final categoryStr = json['categoryName']?.toString() ?? json['category']?.toString() ?? 'Dresses';
+
+    // Sanitize any mismatched footwear image URLs if category is clothing/apparel
+    final isFootwear = categoryStr.toLowerCase().contains('shoe') || categoryStr.toLowerCase().contains('footwear');
+    if (!isFootwear && imgList.isNotEmpty) {
+      imgList = imgList.where((img) {
+        final lower = img.toLowerCase();
+        return !lower.contains('photo-1518049362265') &&
+               !lower.contains('photo-1543163521-1bf539c55dd2') &&
+               !lower.contains('photo-1560343090-f0409e92791a') &&
+               !lower.contains('photo-1535043934128') &&
+               !lower.contains('photo-1595950653106') &&
+               !lower.contains('photo-1542291026-7eec264c27ff') &&
+               !lower.contains('photo-1525966222134');
+      }).toList();
+    }
+
+    if (imgList.isEmpty) {
+      final cat = categoryStr.toLowerCase();
+      if (cat.contains('dress')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('jean') || cat.contains('denim')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1542272604-780c96856592?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('top') || cat.contains('blouse')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1534126511673-b6899657816a?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('t-shirt') || cat.contains('tee')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('kurti')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('saree')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('shoe') || cat.contains('footwear')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('bag')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('jewel')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('skirt')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('coord') || cat.contains('co-ord')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&auto=format&fit=crop'
+        ];
+      } else if (cat.contains('ethnic')) {
+        imgList = [
+          'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&auto=format&fit=crop'
+        ];
+      } else {
+        imgList = [
+          'https://images.unsplash.com/photo-1548142813-c348350df52b?w=800&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&auto=format&fit=crop'
+        ];
+      }
+    }
+
     double p1 = 0.0;
     if (json['price'] != null) {
       p1 = (json['price'] as num).toDouble();

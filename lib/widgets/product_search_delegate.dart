@@ -99,11 +99,12 @@ class ProductSearchDelegate extends SearchDelegate<Product?> {
 
     final words = t.split(RegExp(r'[\s\-_,]+'));
     for (final word in words) {
-      if (word.isEmpty) continue;
-      if (word.contains(q) || q.contains(word)) return true;
+      if (word.isEmpty || word.length < 3) continue;
+      if (word.contains(q)) return true;
 
-      final maxAllowedDist = q.length <= 4 ? 1 : 2;
-      if ((q.length - word.length).abs() <= maxAllowedDist) {
+      // Only allow 1 edit distance for 4-6 char words, 2 for >= 7 chars
+      final maxAllowedDist = q.length <= 3 ? 0 : (q.length <= 6 ? 1 : 2);
+      if (maxAllowedDist > 0 && (q.length - word.length).abs() <= maxAllowedDist) {
         if (_levenshtein(q, word) <= maxAllowedDist) {
           return true;
         }
@@ -291,19 +292,51 @@ class ProductSearchDelegate extends SearchDelegate<Product?> {
       }
     }
 
-    // Exact + Normalized + Fuzzy matching
-    final matchedProducts = allProducts.where((p) {
+    // 1. Direct & Root Keyword Match (High Precision)
+    List<Product> directMatches = allProducts.where((p) {
       final name = p.name.toLowerCase();
       final cat = p.category.toLowerCase();
       final brand = (p.brand ?? '').toLowerCase();
       final combined = '$name $cat $brand';
 
-      if (combined.contains(rawQuery)) return true;
-      if (combined.contains(normalizedQuery)) return true;
+      if (combined.contains(rawQuery) || combined.contains(normalizedQuery)) {
+        return true;
+      }
 
-      final queryTokens = rawQuery.split(RegExp(r'\s+'));
-      return queryTokens.every((token) => _isFuzzyMatch(token, combined));
+      // Root singular/plural check (e.g. "sarees" -> "saree", "dresses" -> "dress", "jeans" -> "jean")
+      String singular = rawQuery;
+      if (singular.endsWith('es') && singular.length > 4) {
+        singular = singular.substring(0, singular.length - 2);
+      } else if (singular.endsWith('s') && singular.length > 3) {
+        singular = singular.substring(0, singular.length - 1);
+      }
+
+      if (singular.isNotEmpty && (cat.contains(singular) || name.contains(singular))) {
+        return true;
+      }
+
+      final queryTokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+      if (queryTokens.length > 1) {
+        return queryTokens.every((token) => combined.contains(token));
+      }
+
+      return false;
     }).toList();
+
+    List<Product> matchedProducts = directMatches;
+
+    // 2. Fuzzy Typo Match (Fallback ONLY when no direct matches found)
+    if (matchedProducts.isEmpty) {
+      final queryTokens = rawQuery.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+      matchedProducts = allProducts.where((p) {
+        final name = p.name.toLowerCase();
+        final cat = p.category.toLowerCase();
+        final brand = (p.brand ?? '').toLowerCase();
+        final combined = '$name $cat $brand';
+
+        return queryTokens.every((token) => _isFuzzyMatch(token, combined));
+      }).toList();
+    }
 
     // Related / Cross-sell products (items not in results but relevant)
     final relatedProducts = allProducts.where((p) {

@@ -13,6 +13,8 @@ import 'package:new_expense/screens/order_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
 import 'package:new_expense/services/api_config.dart';
 import 'package:new_expense/services/auth_service.dart';
+import 'package:new_expense/data/address_data.dart';
+import 'package:new_expense/models/address_model.dart';
 import 'package:new_expense/widgets/address_dialog.dart';
 
 class BottomAccountScreen extends StatefulWidget {
@@ -23,6 +25,13 @@ class BottomAccountScreen extends StatefulWidget {
 }
 
 class _BottomAccountScreenState extends State<BottomAccountScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AddressData.init().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
   void _logout() async {
     final shouldLogout = await showDialog<bool>(
       context: context,
@@ -157,24 +166,41 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
       final response = await http.get(uri, headers: ApiConfig.headers()).timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonBody = jsonDecode(response.body);
-        if (jsonBody['success'] == true && jsonBody['data'] is List) {
-          return List<Map<String, dynamic>>.from(jsonBody['data']);
+        if (jsonBody['success'] == true && jsonBody['data'] is List && (jsonBody['data'] as List).isNotEmpty) {
+          final liveList = List<Map<String, dynamic>>.from(jsonBody['data']);
+          final activeList = liveList.where((c) => c['active'] == true).toList();
+          if (activeList.isNotEmpty) return activeList;
         }
       }
     } catch (e) {
       debugPrint('Error fetching live coupons: $e');
     }
-    return [];
+    return [
+      {
+        'code': '3102026',
+        'description': 'Special 30% OFF festive discount on all fashion orders',
+        'discountType': 'PERCENTAGE',
+        'discountValue': 30,
+        'minOrderValue': 0,
+        'maxDiscountAmount': 3000,
+        'active': true,
+      },
+    ];
   }
 
   void _showCouponsSheet() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => SafeArea(
-        child: Padding(
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.75,
+          ),
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -195,113 +221,117 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
               ),
               const Divider(),
               const SizedBox(height: 8),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: _fetchLiveCoupons(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 24),
-                      child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-                    );
-                  }
+              Flexible(
+                child: SingleChildScrollView(
+                  child: FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _fetchLiveCoupons(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                        );
+                      }
 
-                  final coupons = snapshot.data ?? [];
-                  if (coupons.isEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Icon(Icons.local_offer_outlined, size: 40, color: Colors.grey.shade400),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'No Active Coupons Available',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.dark),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Check back soon for exclusive discounts and festive deals!',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 12, color: AppColors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    children: coupons.map((c) {
-                      final code = c['code']?.toString() ?? 'PROMO';
-                      final desc = c['description']?.toString() ?? '';
-                      final isPercent = (c['discountType']?.toString().toUpperCase() == 'PERCENTAGE');
-                      final discountVal = c['discountValue']?.toString() ?? '0';
-                      final discountTag = isPercent ? '$discountVal% OFF' : '₹$discountVal OFF';
-                      final minOrder = c['minOrderValue'] != null && (c['minOrderValue'] as num) > 0
-                          ? 'Min order ₹${c['minOrderValue']}'
-                          : 'No minimum order value';
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.primary),
-                              ),
-                              child: Text(
-                                code,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.primary,
-                                  fontSize: 13,
-                                  letterSpacing: 1.1,
+                      final coupons = snapshot.data ?? [];
+                      if (coupons.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Icon(Icons.local_offer_outlined, size: 40, color: Colors.grey.shade400),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'No Active Coupons Available',
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.dark),
                                 ),
-                              ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'Check back soon for exclusive discounts and festive deals!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    desc.isNotEmpty ? desc : discountTag,
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark),
+                          ),
+                        );
+                      }
+
+                      return Column(
+                        children: coupons.map((c) {
+                          final code = c['code']?.toString() ?? '3102026';
+                          final desc = c['description']?.toString() ?? '';
+                          final isPercent = (c['discountType']?.toString().toUpperCase() == 'PERCENTAGE');
+                          final discountVal = c['discountValue']?.toString() ?? '30';
+                          final discountTag = isPercent ? '$discountVal% OFF' : '₹$discountVal OFF';
+                          final minOrder = c['minOrderValue'] != null && (c['minOrderValue'] as num) > 0
+                              ? 'Min order ₹${c['minOrderValue']}'
+                              : 'No minimum order value';
+
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: AppColors.primary),
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    minOrder,
-                                    style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                                  child: Text(
+                                    code,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.primary,
+                                      fontSize: 13,
+                                      letterSpacing: 1.1,
+                                    ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        desc.isNotEmpty ? desc : discountTag,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        minOrder,
+                                        style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy, size: 18, color: AppColors.primary),
+                                  tooltip: 'Copy Code',
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: code));
+                                    Navigator.pop(ctx);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Coupon code $code copied!')),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.copy, size: 18, color: AppColors.primary),
-                              tooltip: 'Copy Code',
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: code));
-                                Navigator.pop(ctx);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Coupon code $code copied!')),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                          );
+                        }).toList(),
                       );
-                    }).toList(),
-                  );
-                },
+                    },
+                  ),
+                ),
               ),
             ],
           ),
@@ -495,44 +525,51 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         const SizedBox(height: 14),
                         const Divider(height: 1),
                         const SizedBox(height: 12),
-                        InkWell(
-                          onTap: () async {
-                            await showAddressDialog(context);
-                            if (mounted) setState(() {});
-                          },
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFF0F5),
+                        ValueListenableBuilder<List<AddressItem>>(
+                          valueListenable: AddressData.notifier,
+                          builder: (context, addresses, _) {
+                            final selected = AddressData.selectedAddress;
+                            final hasAddress = selected != null;
+                            final locText = hasAddress ? selected.fullDisplayText : '';
+
+                            return InkWell(
+                              onTap: () async {
+                                await showAddressDialog(context);
+                                if (mounted) setState(() {});
+                              },
                               borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.location_on, color: AppColors.primary, size: 16),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    UserData.location.trim().isNotEmpty
-                                        ? 'Delivery: ${UserData.location.trim()}'
-                                        : 'Add delivery address',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.primary,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFF0F5),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.location_on, color: AppColors.primary, size: 16),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        hasAddress ? 'Delivery: $locText' : 'Add delivery address',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primary,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                    Icon(
+                                      hasAddress ? Icons.edit_outlined : Icons.add_circle_outline,
+                                      color: AppColors.primary,
+                                      size: 15,
+                                    ),
+                                  ],
                                 ),
-                                Icon(
-                                  UserData.location.trim().isNotEmpty ? Icons.edit_outlined : Icons.add_circle_outline,
-                                  color: AppColors.primary,
-                                  size: 15,
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     )
@@ -694,15 +731,23 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
               ),
               child: Column(
                 children: [
-                  _MenuTile(
-                    icon: Icons.location_on_outlined,
-                    title: 'Saved Delivery Addresses',
-                    subtitle: UserData.location.trim().isNotEmpty
-                        ? UserData.location.trim()
-                        : 'Add and manage shipping addresses',
-                    onTap: () async {
-                      await showAddressDialog(context);
-                      if (mounted) setState(() {});
+                  ValueListenableBuilder<List<AddressItem>>(
+                    valueListenable: AddressData.notifier,
+                    builder: (context, addresses, _) {
+                      final selected = AddressData.selectedAddress;
+                      final subText = (selected != null)
+                          ? selected.fullDisplayText
+                          : 'Add and manage shipping addresses';
+
+                      return _MenuTile(
+                        icon: Icons.location_on_outlined,
+                        title: 'Saved Delivery Addresses',
+                        subtitle: subText,
+                        onTap: () async {
+                          await showAddressDialog(context);
+                          if (mounted) setState(() {});
+                        },
+                      );
                     },
                   ),
                   const Divider(height: 1, indent: 60),

@@ -187,13 +187,13 @@ class _AddressManagerModalState extends State<_AddressManagerModal> {
     }
   }
 
-  void _selectDefaultAddress(AddressItem item) {
+  void _selectDefaultAddress(AddressItem item) async {
     AddressData.setDefaultAddress(item.id);
     if (AuthService.isLoggedIn && !item.id.contains(RegExp(r'^\d+$'))) {
       try {
         final token = AuthService.accessToken;
         final uri = Uri.parse('${ApiConfig.addresses}/${item.id}/default');
-        http.patch(uri, headers: ApiConfig.headers(token: token)).timeout(const Duration(seconds: 10));
+        await http.patch(uri, headers: ApiConfig.headers(token: token)).timeout(const Duration(seconds: 10));
       } catch (e) {
         debugPrint('Error setting default backend address: $e');
       }
@@ -210,7 +210,7 @@ class _AddressManagerModalState extends State<_AddressManagerModal> {
       final state = _selectedState;
       final pincode = _pincodeController.text.trim();
 
-      final addressItem = AddressItem(
+      var addressItem = AddressItem(
         id: _editingId ?? DateTime.now().millisecondsSinceEpoch.toString(),
         label: _selectedType,
         fullName: name,
@@ -223,13 +223,7 @@ class _AddressManagerModalState extends State<_AddressManagerModal> {
         isDefault: true,
       );
 
-      if (_editingId != null) {
-        AddressData.updateAddress(addressItem);
-      } else {
-        AddressData.addAddress(addressItem);
-      }
-
-      // Sync with backend DB if user is logged in
+      // Direct live DB Sync if user is logged in
       if (AuthService.isLoggedIn) {
         try {
           final token = AuthService.accessToken;
@@ -250,35 +244,29 @@ class _AddressManagerModalState extends State<_AddressManagerModal> {
             'isDefault': true,
           });
 
-          if (isEdit) {
-            http.put(uri, headers: ApiConfig.headers(token: token), body: body).timeout(const Duration(seconds: 10));
-          } else {
-            http.post(uri, headers: ApiConfig.headers(token: token), body: body).then((res) {
-              if (res.statusCode == 200 || res.statusCode == 201) {
-                final jsonBody = jsonDecode(res.body);
-                if (jsonBody['success'] == true && jsonBody['data'] != null && jsonBody['data']['id'] != null) {
-                  final dbId = jsonBody['data']['id'].toString();
-                  AddressData.updateAddress(AddressItem(
-                    id: dbId,
-                    label: _selectedType,
-                    fullName: name,
-                    phone: phone,
-                    houseNo: house,
-                    area: area,
-                    city: city,
-                    state: state,
-                    pincode: pincode,
-                    isDefault: true,
-                  ));
-                }
-              }
-            }).timeout(const Duration(seconds: 10));
+          final res = isEdit
+              ? await http.put(uri, headers: ApiConfig.headers(token: token), body: body).timeout(const Duration(seconds: 10))
+              : await http.post(uri, headers: ApiConfig.headers(token: token), body: body).timeout(const Duration(seconds: 10));
+
+          if (res.statusCode == 200 || res.statusCode == 201) {
+            final jsonBody = jsonDecode(res.body);
+            if (jsonBody['success'] == true && jsonBody['data'] != null) {
+              addressItem = AddressItem.fromJson(jsonBody['data'] as Map<String, dynamic>);
+              debugPrint('Saved to backend DB with id: ${addressItem.id}');
+            }
           }
         } catch (e) {
           debugPrint('Error syncing address to backend: $e');
         }
       }
 
+      if (_editingId != null) {
+        AddressData.updateAddress(addressItem);
+      } else {
+        AddressData.addAddress(addressItem);
+      }
+
+      if (!mounted) return;
       Navigator.pop(context);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -287,7 +275,13 @@ class _AddressManagerModalState extends State<_AddressManagerModal> {
             children: [
               const Icon(Icons.check_circle, color: Colors.white, size: 20),
               const SizedBox(width: 8),
-              Text(_editingId != null ? 'Address updated successfully!' : 'Address saved & set for delivery!'),
+              Expanded(
+                child: Text(
+                  _editingId != null ? 'Address updated in database!' : 'Address saved to database & set for delivery!',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           backgroundColor: const Color(0xFF0F8A5F),

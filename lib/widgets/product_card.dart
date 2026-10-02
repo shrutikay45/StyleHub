@@ -135,37 +135,41 @@ class _ProductCardState extends State<ProductCard> {
             const SizedBox(height: 4),
 
             // PRICE & DISCOUNT
-            Row(
-              children: [
-                Text(
-                  '₹${widget.product.price.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-                if (widget.product.oldPrice > widget.product.price) ...[
-                  const SizedBox(width: 5),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
                   Text(
-                    '₹${widget.product.oldPrice.toStringAsFixed(0)}',
+                    '₹${widget.product.price.toStringAsFixed(0)}',
                     style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey,
-                      decoration: TextDecoration.lineThrough,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
                     ),
                   ),
-                  const SizedBox(width: 5),
-                  Text(
-                    '${(((widget.product.oldPrice - widget.product.price) / widget.product.oldPrice) * 100).round()}% off',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F8A5F),
+                  if (widget.product.oldPrice > widget.product.price) ...[
+                    const SizedBox(width: 5),
+                    Text(
+                      '₹${widget.product.oldPrice.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 5),
+                    Text(
+                      '${(((widget.product.oldPrice - widget.product.price) / widget.product.oldPrice) * 100).round()}% off',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F8A5F),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
 
             const SizedBox(height: 4),

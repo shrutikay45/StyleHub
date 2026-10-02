@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/data/order_data.dart';
 import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/data/wishlist_data.dart';
 import 'package:new_expense/screens/auth/login_screen.dart';
 import 'package:new_expense/screens/help_center_screen.dart';
+import 'package:new_expense/screens/home/notification_screen.dart';
 import 'package:new_expense/screens/order_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
 import 'package:new_expense/services/auth_service.dart';
@@ -54,6 +56,194 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
         (route) => false,
       );
     }
+  }
+
+  void _showEditProfileDialog() {
+    final nameCtrl = TextEditingController(text: UserData.name);
+    final phoneCtrl = TextEditingController(text: UserData.phone);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Edit Profile Details',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.dark),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ],
+            ),
+            const Divider(),
+            const SizedBox(height: 10),
+            TextField(
+              controller: nameCtrl,
+              decoration: InputDecoration(
+                labelText: 'Full Name',
+                prefixIcon: const Icon(Icons.person_outline),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: phoneCtrl,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                prefixIcon: const Icon(Icons.phone_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () {
+                  if (nameCtrl.text.trim().isNotEmpty) {
+                    setState(() {
+                      UserData.name = nameCtrl.text.trim();
+                      if (phoneCtrl.text.trim().isNotEmpty) {
+                        UserData.phone = phoneCtrl.text.trim();
+                      }
+                    });
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Profile updated successfully!'),
+                        backgroundColor: Color(0xFF0F8A5F),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('SAVE CHANGES', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCouponsSheet() {
+    final coupons = [
+      {'code': 'WELCOME50', 'desc': 'Get 50% off on your first order', 'min': 'Min order ₹999'},
+      {'code': 'FLAT100', 'desc': 'Flat ₹100 cashback on prepaid orders', 'min': 'Min order ₹499'},
+      {'code': 'FESTIVE20', 'desc': '20% off on Ethnic & Party Wear collections', 'min': 'No min order'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Available Offers & Coupons',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.dark),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              ...coupons.map((c) => Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.primary),
+                          ),
+                          child: Text(
+                            c['code']!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primary,
+                              fontSize: 13,
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                c['desc']!,
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.dark),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                c['min']!,
+                                style: const TextStyle(fontSize: 11, color: AppColors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.copy, size: 18, color: AppColors.primary),
+                          tooltip: 'Copy Code',
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: c['code']!));
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Coupon code ${c['code']} copied!')),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showPolicySheet(String title, String content) {
@@ -142,7 +332,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
           children: [
             const SizedBox(height: 10),
 
-            // 1. USER PROFILE CARD
+            // 1. USER PROFILE CARD (INITIAL AVATAR - NO PHOTO UPLOAD)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(18),
@@ -161,6 +351,7 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                 children: [
                   Row(
                     children: [
+                      // Gradient Initial Avatar
                       Container(
                         width: 58,
                         height: 58,
@@ -195,15 +386,32 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              userName,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.dark,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    userName,
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.dark,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (isLoggedIn) ...[
+                                  const SizedBox(width: 6),
+                                  GestureDetector(
+                                    onTap: _showEditProfileDialog,
+                                    child: const Icon(
+                                      Icons.edit_note,
+                                      size: 18,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                             const SizedBox(height: 3),
                             Text(
@@ -243,7 +451,10 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                   const Divider(height: 1),
                   const SizedBox(height: 12),
                   InkWell(
-                    onTap: () => showAddressDialog(context),
+                    onTap: () async {
+                      await showAddressDialog(context);
+                      if (mounted) setState(() {});
+                    },
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -278,41 +489,80 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
 
             const SizedBox(height: 16),
 
-            // 2. QUICK SHORTCUTS (ORDERS & WISHLIST)
+            // 2. QUICK SHORTCUTS (2x2 GRID: ORDERS, WISHLIST, NOTIFICATIONS, OFFERS)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: _QuickCard(
-                      icon: Icons.inventory_2_outlined,
-                      title: 'My Orders',
-                      countText: '${OrderData.orders.length} Placed',
-                      color: const Color(0xFFF3E8FF),
-                      iconColor: const Color(0xFF7E22CE),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const OrderScreen()),
-                        );
-                      },
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _QuickCard(
+                          icon: Icons.inventory_2_outlined,
+                          title: 'My Orders',
+                          countText: '${OrderData.orders.length} Placed',
+                          color: const Color(0xFFF3E8FF),
+                          iconColor: const Color(0xFF7E22CE),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const OrderScreen()),
+                            ).then((_) {
+                              if (mounted) setState(() {});
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickCard(
+                          icon: Icons.favorite_outline,
+                          title: 'Wishlist',
+                          countText: '${WishlistData.items.length} Saved',
+                          color: const Color(0xFFFFE4E6),
+                          iconColor: const Color(0xFFE11D48),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const WishlistScreen()),
+                            ).then((_) {
+                              if (mounted) setState(() {});
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickCard(
-                      icon: Icons.favorite_outline,
-                      title: 'Wishlist',
-                      countText: '${WishlistData.items.length} Saved',
-                      color: const Color(0xFFFFE4E6),
-                      iconColor: const Color(0xFFE11D48),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const WishlistScreen()),
-                        );
-                      },
-                    ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _QuickCard(
+                          icon: Icons.notifications_none_outlined,
+                          title: 'Notifications',
+                          countText: '4 Updates',
+                          color: const Color(0xFFE0F2FE),
+                          iconColor: const Color(0xFF0284C7),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const NotificationScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickCard(
+                          icon: Icons.local_offer_outlined,
+                          title: 'Coupons',
+                          countText: '3 Active Deals',
+                          color: const Color(0xFFDCFCE7),
+                          iconColor: const Color(0xFF16A34A),
+                          onTap: _showCouponsSheet,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -340,7 +590,10 @@ class _BottomAccountScreenState extends State<BottomAccountScreen> {
                     icon: Icons.location_on_outlined,
                     title: 'Saved Delivery Addresses',
                     subtitle: 'Manage your shipping addresses',
-                    onTap: () => showAddressDialog(context),
+                    onTap: () async {
+                      await showAddressDialog(context);
+                      if (mounted) setState(() {});
+                    },
                   ),
                   const Divider(height: 1, indent: 60),
                   _MenuTile(
@@ -468,7 +721,7 @@ class _QuickCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16),
@@ -476,14 +729,14 @@ class _QuickCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: iconColor, size: 22),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -492,18 +745,22 @@ class _QuickCard extends StatelessWidget {
                     title,
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: 14,
+                      fontSize: 13,
                       color: AppColors.dark,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     countText,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 12,
+                      fontSize: 11,
                       color: AppColors.dark.withValues(alpha: 0.6),
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

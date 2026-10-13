@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_expense/screens/home/bottom_cart_screen.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/widgets/product_card.dart';
-
+import 'package:new_expense/widgets/product_search_delegate.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 import '../../core/constants/app_colors.dart';
 
 class BottomCategoryScreen extends StatefulWidget {
@@ -9,7 +11,6 @@ class BottomCategoryScreen extends StatefulWidget {
 
   @override
   State<BottomCategoryScreen> createState() => _BottomCategoryScreenState();
-
 }
 
 class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
@@ -31,9 +32,11 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
   ];
 
   @override
-
   Widget build(BuildContext context) {
-    final filteredProducts = ProductService().getByCategory(selectedCategory);
+    final service = ProductService();
+    final filteredProducts = service.getByCategory(selectedCategory);
+    final isLoading = service.isLoading && filteredProducts.isEmpty;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -49,15 +52,26 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: ProductSearchDelegate(),
+              );
+            },
             icon: const Icon(
               Icons.search,
               color: AppColors.dark,
             ),
           ),
-
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BottomCartScreen(),
+                ),
+              );
+            },
             icon: const Icon(
               Icons.shopping_bag_outlined,
               color: AppColors.dark,
@@ -71,18 +85,14 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
           Container(
             width: 105,
             color: AppColors.background,
-
             child: ListView.builder(
               itemCount: categories.length,
-
               itemBuilder: (context, index) {
                 final category = categories[index];
 
                 return _CategoryItem(
                   title: category,
-
                   isSelected: selectedCategory == category,
-
                   onTap: () {
                     setState(() {
                       selectedCategory = category;
@@ -93,27 +103,39 @@ class _BottomCategoryScreenState extends State<BottomCategoryScreen> {
             ),
           ),
 
-          // RIGHT SIDE
+          // RIGHT SIDE OR SKELETON
           Expanded(
-            child: GridView.builder(
-              itemCount: filteredProducts.length,
-
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.68,
-              ),
-
-              itemBuilder: (context, index) {
-                final product = filteredProducts[index];
-                return ProductCard(
-                  product: product,
-                );
-
-              },
-            ),
+            child: isLoading
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: ProductGridSkeleton(itemCount: 6),
+                  )
+                : filteredProducts.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No products found in this category',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      )
+                    : GridView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                        itemCount: filteredProducts.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 14,
+                          childAspectRatio: 0.65,
+                        ),
+                        itemBuilder: (context, index) {
+                          final product = filteredProducts[index];
+                          return ProductCard(
+                            product: product,
+                          );
+                        },
+                      ),
           ),
         ],
       ),

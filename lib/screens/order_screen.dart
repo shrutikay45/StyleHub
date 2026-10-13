@@ -358,21 +358,33 @@ class OrderScreen extends StatelessWidget {
         width: 82,
         height: 105,
         color: AppColors.softBackground,
-        child: Image.asset(
-          imagePath,
-          fit: BoxFit.cover,
-          errorBuilder: (
-              context,
-              error,
-              stackTrace,
-              ) {
-            return const Icon(
-              Icons.image_not_supported_outlined,
-              color: AppColors.lightGrey,
-              size: 28,
-            );
-          },
-        ),
+        child: imagePath.startsWith('http')
+            ? Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.image_not_supported_outlined,
+                    color: AppColors.lightGrey,
+                    size: 28,
+                  );
+                },
+              )
+            : Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (
+                    context,
+                    error,
+                    stackTrace,
+                    ) {
+                  return const Icon(
+                    Icons.image_not_supported_outlined,
+                    color: AppColors.lightGrey,
+                    size: 28,
+                  );
+                },
+              ),
       ),
     );
   }

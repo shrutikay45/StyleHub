@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:new_expense/services/product_service.dart';
 import 'package:new_expense/screens/home/CategoryProductsPage/product_detail_screen.dart';
+import 'package:new_expense/widgets/shimmer_loading.dart';
 
 class FlashSaleProductsScreen extends StatelessWidget {
   const FlashSaleProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get all products that are currently on sale from ProductService
-    final saleProducts = ProductService()
-        .allProducts
-        .where((product) => product.oldPrice > product.price)
-        .toList();
+    final service = ProductService();
+    final saleProducts = service.getFlashSaleProducts();
+    final isLoading = service.isLoading && saleProducts.isEmpty;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8FA),
@@ -118,19 +117,24 @@ class FlashSaleProductsScreen extends StatelessWidget {
           ),
 
           // --------------------------------------------------
-          // PRODUCT GRID
+          // PRODUCT GRID OR SKELETON
           // --------------------------------------------------
           Expanded(
-            child: saleProducts.isEmpty
-                ? const Center(
-              child: Text(
-                'No sale products available',
-                style: TextStyle(
-                  color: Color(0xFF777777),
-                  fontSize: 15,
-                ),
-              ),
-            )
+            child: isLoading
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: ProductGridSkeleton(itemCount: 6),
+                  )
+                : saleProducts.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No sale products available',
+                          style: TextStyle(
+                            color: Color(0xFF777777),
+                            fontSize: 15,
+                          ),
+                        ),
+                      )
                 : GridView.builder(
               padding: const EdgeInsets.fromLTRB(
                 16,

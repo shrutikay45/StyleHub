@@ -5,6 +5,7 @@ import 'package:new_expense/screens/home/bottom_cart_screen.dart';
 import 'package:new_expense/screens/home/bottom_category_screen.dart';
 import 'package:new_expense/screens/wishlist/wishlist_screen.dart';
 import 'package:new_expense/screens/order_screen.dart';
+import 'package:new_expense/screens/help_center_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -125,8 +126,63 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Coupons'),
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No coupons available at the moment.')),
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (ctx) => SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Available Offers & Coupons',
+                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.dark),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () => Navigator.pop(ctx),
+                                ),
+                              ],
+                            ),
+                            const Divider(),
+                            const SizedBox(height: 8),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.local_offer, color: AppColors.primary),
+                              ),
+                              title: const Text('3102026 (30% OFF)', style: TextStyle(fontWeight: FontWeight.w700)),
+                              subtitle: const Text('Special 30% OFF festive discount on all orders'),
+                              trailing: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Coupon code 3102026 copied to clipboard!')),
+                                  );
+                                },
+                                child: const Text('COPY', style: TextStyle(color: Colors.white, fontSize: 12)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
@@ -136,6 +192,12 @@ class AppDrawer extends StatelessWidget {
                 title: const Text('Help & Support'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpCenterScreen(),
+                    ),
+                  );
                 },
               ),
           

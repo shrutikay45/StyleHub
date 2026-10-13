@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:new_expense/data/user_data.dart';
+import 'package:new_expense/core/constants/app_colors.dart';
 import 'package:new_expense/data/cart_data.dart';
 import 'package:new_expense/data/order_data.dart';
-import 'package:new_expense/models/order_model.dart';
-import 'package:new_expense/screens/home/main_bottom_nav.dart';
-import 'package:new_expense/core/constants/app_colors.dart';
-import 'package:new_expense/data/order_data.dart';
+import 'package:new_expense/data/user_data.dart';
 import 'package:new_expense/models/cart_item.dart';
 import 'package:new_expense/models/order_model.dart';
+import 'package:new_expense/screens/home/main_bottom_nav.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
@@ -78,6 +76,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   // ------------------------------------------------------------
 
   void _continuePayment() {
+    final orderItems = widget.items.isNotEmpty
+        ? List<CartItem>.from(widget.items)
+        : List<CartItem>.from(CartData.items);
+
+    if (widget.totalAmount <= 0 || orderItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cannot place order: Cart is empty or amount is ₹0.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     if (selectedPaymentMethod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -100,17 +112,21 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   }
 
   void _createOrderAndClearCart() {
-    if (CartData.items.isEmpty) return;
+    final orderItems = widget.items.isNotEmpty
+        ? List<CartItem>.from(widget.items)
+        : List<CartItem>.from(CartData.items);
+
+    if (orderItems.isEmpty || widget.totalAmount <= 0) return;
     
     final order = OrderModel(
       orderId: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
       status: 'Processing',
       orderDate: DateTime.now(),
-      items: List.from(CartData.items),
+      items: orderItems,
       totalAmount: widget.totalAmount,
       customerName: UserData.name,
       deliveryAddress: UserData.location,
-      paymentMethod: selectedPaymentMethod ?? 'Unknown',
+      paymentMethod: selectedPaymentMethod ?? 'Cash on Delivery',
       expectedDelivery: 'In 3-5 days',
     );
     OrderData.addOrder(order);
@@ -244,8 +260,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               onPressed: () {
                 Navigator.pop(context);
 
-                _createOrder('Cash on Delivery');
-
                 _createOrderAndClearCart();
 
                 _showOrderSuccess(
@@ -270,55 +284,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-
-
-  void _showRazorpaySetupMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          title: const Text(
-            'Razorpay setup',
-            style: TextStyle(
-              color: AppColors.dark,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          content: const Text(
-            'The payment screen is ready. '
-                'Add your Razorpay test key to start testing online payments.',
-            style: TextStyle(
-              color: AppColors.grey,
-              height: 1.5,
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _createOrder('UPI');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text('Okay'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-
   // ------------------------------------------------------------
   // ORDER SUCCESS
   // ------------------------------------------------------------
@@ -336,22 +301,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         ),
       ),
     );
-  }
-
-  void _createOrder(String paymentMethod) {
-    final order = OrderModel(
-      orderId: 'ORD${DateTime.now().millisecondsSinceEpoch}',
-      orderDate: DateTime.now(),
-      items: List<CartItem>.from(widget.items),
-      totalAmount: widget.totalAmount,
-      customerName: 'Customer',
-      deliveryAddress: 'Delivery address',
-      paymentMethod: paymentMethod,
-      status: 'Order Confirmed',
-      expectedDelivery: 'Expected delivery within 3-5 days',
-    );
-
-    OrderData.addOrder(order);
   }
 
 

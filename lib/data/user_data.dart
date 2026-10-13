@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 class UserData {
-  static final ValueNotifier<String> nameNotifier = ValueNotifier<String>('Guest User');
+  static final ValueNotifier<String> nameNotifier = ValueNotifier<String>('');
   static final ValueNotifier<String> emailNotifier = ValueNotifier<String>('');
   static final ValueNotifier<String> phoneNotifier = ValueNotifier<String>('');
-  static final ValueNotifier<String> locationNotifier = ValueNotifier<String>('New Delhi, India');
+  static final ValueNotifier<String> locationNotifier = ValueNotifier<String>('');
 
   static String get name => nameNotifier.value;
   static set name(String newName) {
@@ -24,5 +24,12 @@ class UserData {
   static String get location => locationNotifier.value;
   static set location(String newLocation) {
     locationNotifier.value = newLocation;
+  }
+
+  static void clear() {
+    name = '';
+    email = '';
+    phone = '';
+    location = '';
   }
 }

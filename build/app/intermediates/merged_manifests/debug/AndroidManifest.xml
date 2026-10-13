@@ -59,6 +59,16 @@
 
             <data android:scheme="upi" />
         </intent>
+        <!--
+             Package visibility (API 30+) for CRED discovery: BaseUtils queries
+             credpay:// handlers (e.g. credpay://bio_auth/check for CRED biometric
+             capability, credpay://checkout for CRED app detection)
+        -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <data android:scheme="credpay" />
+        </intent>
     </queries>
 
     <uses-permission android:name="android.permission.NFC" />
